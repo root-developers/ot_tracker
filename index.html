@@ -475,32 +475,66 @@
     const totalPayout = parseFloat((totalOT + mobile + leavePay).toFixed(2));
 
     // 6 summary tiles
+    // document.getElementById('summaryGrid').innerHTML = `
+    //   <div class="summary-tile">
+    //     <div class="tile-val">₹${totalOT.toFixed(0)}</div>
+    //     <div class="tile-label">⏱ Total Overtime</div>
+    //   </div>
+    //   <div class="summary-tile">
+    //     <div class="tile-val green">${data.days_worked || 0}</div>
+    //     <div class="tile-label">📅 Days Worked</div>
+    //   </div>
+    //   <div class="summary-tile">
+    //     <div class="tile-val">${data.days_fullday || 0}</div>
+    //     <div class="tile-label">🌙 Full Day OT</div>
+    //   </div>
+    //   <div class="summary-tile">
+    //     <div class="tile-val">₹${totalFood.toFixed(0)}</div>
+    //     <div class="tile-label">🍱 Food Charges</div>
+    //   </div>
+    //   <div class="summary-tile">
+    //     <div class="tile-val blue">₹${mobile}</div>
+    //     <div class="tile-label">📱 Mobile Recharge</div>
+    //   </div>
+    //   <div class="summary-tile">
+    //     <div class="tile-val purple">₹${leavePay.toFixed(0)}</div>
+    //     <div class="tile-label">🏖️ Leave (${leaveCount} days)</div>
+    //   </div>
+    // `;
     document.getElementById('summaryGrid').innerHTML = `
-      <div class="summary-tile">
-        <div class="tile-val">₹${totalOT.toFixed(0)}</div>
-        <div class="tile-label">⏱ Total Overtime</div>
-      </div>
-      <div class="summary-tile">
-        <div class="tile-val green">${data.days_worked || 0}</div>
-        <div class="tile-label">📅 Days Worked</div>
-      </div>
-      <div class="summary-tile">
-        <div class="tile-val">${data.days_fullday || 0}</div>
-        <div class="tile-label">🌙 Full Day OT</div>
-      </div>
-      <div class="summary-tile">
-        <div class="tile-val">₹${totalFood.toFixed(0)}</div>
-        <div class="tile-label">🍱 Food Charges</div>
-      </div>
-      <div class="summary-tile">
-        <div class="tile-val blue">₹${mobile}</div>
-        <div class="tile-label">📱 Mobile Recharge</div>
-      </div>
-      <div class="summary-tile">
-        <div class="tile-val purple">₹${leavePay.toFixed(0)}</div>
-        <div class="tile-label">🏖️ Leave (${leaveCount} days)</div>
-      </div>
-    `;
+  <div class="summary-tile">
+    <div class="tile-val">₹${totalOT.toFixed(0)}</div>
+    <div class="tile-label">⏱ Total Overtime</div>
+  </div>
+  <div class="summary-tile">
+    <div class="tile-val green">${data.days_worked || 0}</div>
+    <div class="tile-label">📅 Days Worked</div>
+  </div>
+  <div class="summary-tile">
+    <div class="tile-val">${data.days_fullday || 0}</div>
+    <div class="tile-label">🌙 Full Day OT</div>
+  </div>
+  <div class="summary-tile">
+    <div class="tile-val">₹${totalFood.toFixed(0)}</div>
+    <div class="tile-label">🍱 Food Charges</div>
+  </div>
+  <div class="summary-tile">
+    <div class="tile-val green">₹${(totalOT - totalFood).toFixed(0)}</div>
+    <div class="tile-label">💪 Only OT (no food)</div>
+  </div>
+  <div class="summary-tile">
+    <div class="tile-val green">${data.food_days || 0}</div>
+    <div class="tile-label">🍱 Food Days</div>
+  </div>
+  <div class="summary-tile">
+    <div class="tile-val blue">₹${mobile}</div>
+    <div class="tile-label">📱 Mobile Recharge</div>
+  </div>
+  <div class="summary-tile">
+    <div class="tile-val purple">₹${leavePay.toFixed(0)}</div>
+    <div class="tile-label">🏖️ Leave (${leaveCount} days)</div>
+  </div>
+`;
 
     // Total payout card with breakdown
     document.getElementById('payoutCard').innerHTML = `
