@@ -16,15 +16,16 @@ module.exports = async (req, res) => {
     const col = await getCollection();
     const records = await col.find({ date: { $gte: startDate, $lte: endDate } }).sort({ date: -1 }).toArray();
 
-    let total_ot = 0, total_food = 0, days_worked = 0, days_fullday = 0;
+  let total_ot = 0, total_food = 0, days_worked = 0, days_fullday = 0, food_days = 0;
     records.forEach(r => {
-      if (r.checkout_time) {
-        days_worked++;
-        total_ot   += r.total_ot || 0;
-        total_food += (r.morning_food || 0) + (r.evening_food || 0);
-        if (r.full_day_triggered) days_fullday++;
-      }
-    });
+  if (r.checkout_time) {
+    days_worked++;
+    total_ot   += r.total_ot || 0;
+    total_food += (r.morning_food || 0) + (r.evening_food || 0);
+    if (r.full_day_triggered) days_fullday++;
+    if ((r.morning_food || 0) + (r.evening_food || 0) > 0) food_days++; // ← YE ADD KARO
+  }
+});
 
     res.status(200).json({
       records,
@@ -32,6 +33,7 @@ module.exports = async (req, res) => {
       total_food:  parseFloat(total_food.toFixed(2)),
       days_worked,
       days_fullday,
+      food_days, 
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
