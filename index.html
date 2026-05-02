@@ -543,9 +543,17 @@
         ₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}
       </div>
 
+      // <div class="payout-row">
+      //   <span class="payout-label">⏱ Overtime (food included)</span>
+      //   <span class="payout-val">₹${totalOT.toFixed(0)}</span>
+      // </div>
       <div class="payout-row">
-        <span class="payout-label">⏱ Overtime (food included)</span>
-        <span class="payout-val">₹${totalOT.toFixed(0)}</span>
+        <span class="payout-label">⏱ Only Overtime</span>
+        <span class="payout-val">₹${(totalOT - totalFood).toFixed(0)}</span>
+      </div>
+      <div class="payout-row">
+        <span class="payout-label">🍱 Food Charges <span style="font-size:11px;color:var(--muted)">(${data.food_days || 0} days)</span></span>
+        <span class="payout-val">₹${totalFood.toFixed(0)}</span>
       </div>
       <div class="payout-row">
         <span class="payout-label">📱 Mobile Recharge</span>
