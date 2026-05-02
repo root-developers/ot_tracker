@@ -504,7 +504,7 @@
     document.getElementById('summaryGrid').innerHTML = `
   <div class="summary-tile">
     <div class="tile-val">₹${totalOT.toFixed(0)}</div>
-    <div class="tile-label">⏱ Total Overtime(OT+Food)</div>
+    <div class="tile-label">⏱ (OT + Food)</div>
   </div>
   <div class="summary-tile">
     <div class="tile-val green">${data.days_worked || 0}</div>
@@ -515,12 +515,12 @@
     <div class="tile-label">💪 Overtime (OT)</div>
   </div>
   <div class="summary-tile">
-    <div class="tile-val">${data.days_fullday || 0}</div>
-    <div class="tile-label">🌙 Full Day OT</div>
-  </div>
-  <div class="summary-tile">
     <div class="tile-val">₹${totalFood.toFixed(0)}</div>
     <div class="tile-label">🍱 Food </div>
+  </div>
+  <div class="summary-tile">
+    <div class="tile-val">${data.days_fullday || 0}</div>
+    <div class="tile-label">🌙 Full Day OT</div>
   </div>
   <div class="summary-tile">
     <div class="tile-val green">${data.food_days || 0}</div>
