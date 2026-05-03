@@ -1539,6 +1539,86 @@
     }
   }
 
+  // function renderSummary(data) {
+  //   const salary     = getSalary();
+  //   const days       = new Date(dashYear, dashMonth + 1, 0).getDate();
+  //   const perDay     = salary / days;
+  //   const leaveCount = days === 31 ? 3 : 2;
+  //   const leavePay   = parseFloat((perDay * leaveCount).toFixed(2));
+  //   const mobile     = 200;
+  //   const totalOT    = data.total_ot   || 0;
+  //   const totalFood  = data.total_food || 0;
+  //   const totalPayout = parseFloat((totalOT + mobile + leavePay).toFixed(2));
+
+  //   document.getElementById('summaryGrid').innerHTML = `
+  //     <div class="summary-tile">
+  //       <span class="tile-icon">⏱</span>
+  //       <div class="tile-val">₹${totalOT.toFixed(0)}</div>
+  //       <div class="tile-label">OT + Food Total</div>
+  //     </div>
+  //     <div class="summary-tile">
+  //       <span class="tile-icon">📅</span>
+  //       <div class="tile-val green">${data.days_worked || 0}</div>
+  //       <div class="tile-label">Days Worked</div>
+  //     </div>
+  //     <div class="summary-tile">
+  //       <span class="tile-icon">💪</span>
+  //       <div class="tile-val green">₹${(totalOT - totalFood).toFixed(0)}</div>
+  //       <div class="tile-label">Overtime Only</div>
+  //     </div>
+  //     <div class="summary-tile">
+  //       <span class="tile-icon">🍱</span>
+  //       <div class="tile-val">₹${totalFood.toFixed(0)}</div>
+  //       <div class="tile-label">Food Charges</div>
+  //     </div>
+  //     <div class="summary-tile">
+  //       <span class="tile-icon">🌙</span>
+  //       <div class="tile-val">${data.days_fullday || 0}</div>
+  //       <div class="tile-label">Full Day OT Days</div>
+  //     </div>
+  //     <div class="summary-tile">
+  //       <span class="tile-icon">🍱</span>
+  //       <div class="tile-val green">${data.food_days || 0}</div>
+  //       <div class="tile-label">Food Days</div>
+  //     </div>
+  //     <div class="summary-tile">
+  //       <span class="tile-icon">📱</span>
+  //       <div class="tile-val blue">₹${mobile}</div>
+  //       <div class="tile-label">Mobile Recharge</div>
+  //     </div>
+  //     <div class="summary-tile">
+  //       <span class="tile-icon">🏖️</span>
+  //       <div class="tile-val purple">₹${leavePay.toFixed(0)}</div>
+  //       <div class="tile-label">Leave (${leaveCount} days)</div>
+  //     </div>
+  //   `;
+
+  //   document.getElementById('payoutCard').innerHTML = `
+  //     <div class="payout-heading">Is Mahine ka Total</div>
+  //     <div class="payout-total">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</div>
+  //     <div class="payout-divider"></div>
+  //     <div class="payout-row">
+  //       <span class="payout-label">⏱ Only Overtime</span>
+  //       <span class="payout-val">₹${(totalOT - totalFood).toFixed(0)}</span>
+  //     </div>
+  //     <div class="payout-row">
+  //       <span class="payout-label">🍱 Food Charges <span style="font-size:11px;color:var(--text3)">(${data.food_days || 0} days)</span></span>
+  //       <span class="payout-val">₹${totalFood.toFixed(0)}</span>
+  //     </div>
+  //     <div class="payout-row">
+  //       <span class="payout-label">📱 Mobile Recharge</span>
+  //       <span class="payout-val">₹${mobile}</span>
+  //     </div>
+  //     <div class="payout-row">
+  //       <span class="payout-label">🏖️ Leave Payout <span style="font-size:11px;color:var(--text3)">(${leaveCount} × ₹${perDay.toFixed(0)})</span></span>
+  //       <span class="payout-val">₹${leavePay.toFixed(0)}</span>
+  //     </div>
+  //     <div class="payout-row total-row">
+  //       <span style="font-size:15px;font-weight:700;color:var(--text);">💰 Total Payout</span>
+  //       <span class="payout-val highlight">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</span>
+  //     </div>
+  //   `;
+  // }
   function renderSummary(data) {
     const salary     = getSalary();
     const days       = new Date(dashYear, dashMonth + 1, 0).getDate();
@@ -1548,74 +1628,81 @@
     const mobile     = 200;
     const totalOT    = data.total_ot   || 0;
     const totalFood  = data.total_food || 0;
+    const sundayAmt  = data.total_sunday || 0;
+    const sundayDays = data.sunday_days  || 0;
+    const onlyOT     = totalOT - totalFood - sundayAmt; // sirf evening/morning OT
     const totalPayout = parseFloat((totalOT + mobile + leavePay).toFixed(2));
 
     document.getElementById('summaryGrid').innerHTML = `
-      <div class="summary-tile">
-        <span class="tile-icon">⏱</span>
-        <div class="tile-val">₹${totalOT.toFixed(0)}</div>
-        <div class="tile-label">OT + Food Total</div>
+      <div class="tile t-teal">
+        <span class="tile-emoji">💪</span>
+        <div class="tile-val teal">₹${onlyOT.toFixed(0)}</div>
+        <div class="tile-label">Only Overtime</div>
       </div>
-      <div class="summary-tile">
-        <span class="tile-icon">📅</span>
+      <div class="tile t-green">
+        <span class="tile-emoji">📅</span>
         <div class="tile-val green">${data.days_worked || 0}</div>
         <div class="tile-label">Days Worked</div>
       </div>
-      <div class="summary-tile">
-        <span class="tile-icon">💪</span>
-        <div class="tile-val green">₹${(totalOT - totalFood).toFixed(0)}</div>
-        <div class="tile-label">Overtime Only</div>
-      </div>
-      <div class="summary-tile">
-        <span class="tile-icon">🍱</span>
-        <div class="tile-val">₹${totalFood.toFixed(0)}</div>
+      <div class="tile t-orange">
+        <span class="tile-emoji">🍱</span>
+        <div class="tile-val orange">₹${totalFood.toFixed(0)}</div>
         <div class="tile-label">Food Charges</div>
       </div>
-      <div class="summary-tile">
-        <span class="tile-icon">🌙</span>
-        <div class="tile-val">${data.days_fullday || 0}</div>
-        <div class="tile-label">Full Day OT Days</div>
-      </div>
-      <div class="summary-tile">
-        <span class="tile-icon">🍱</span>
-        <div class="tile-val green">${data.food_days || 0}</div>
+      <div class="tile t-pink">
+        <span class="tile-emoji">🍱</span>
+        <div class="tile-val pink">${data.food_days || 0}</div>
         <div class="tile-label">Food Days</div>
       </div>
-      <div class="summary-tile">
-        <span class="tile-icon">📱</span>
+      <div class="tile t-blue">
+        <span class="tile-emoji">🌙</span>
+        <div class="tile-val blue">${data.days_fullday || 0}</div>
+        <div class="tile-label">Full Day OT</div>
+      </div>
+      <div class="tile t-gold">
+        <span class="tile-emoji">☀️</span>
+        <div class="tile-val gold">${sundayDays}</div>
+        <div class="tile-label">Sunday Days</div>
+      </div>
+      <div class="tile t-blue">
+        <span class="tile-emoji">📱</span>
         <div class="tile-val blue">₹${mobile}</div>
         <div class="tile-label">Mobile Recharge</div>
       </div>
-      <div class="summary-tile">
-        <span class="tile-icon">🏖️</span>
+      <div class="tile t-purple">
+        <span class="tile-emoji">🏖️</span>
         <div class="tile-val purple">₹${leavePay.toFixed(0)}</div>
         <div class="tile-label">Leave (${leaveCount} days)</div>
       </div>
     `;
 
     document.getElementById('payoutCard').innerHTML = `
-      <div class="payout-heading">Is Mahine ka Total</div>
-      <div class="payout-total">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</div>
+      <div class="payout-header">Is Mahine ka Total Payout</div>
+      <div class="payout-amount">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</div>
       <div class="payout-divider"></div>
       <div class="payout-row">
-        <span class="payout-label">⏱ Only Overtime</span>
-        <span class="payout-val">₹${(totalOT - totalFood).toFixed(0)}</span>
+        <span class="p-label">💪 Only Overtime</span>
+        <span class="p-val">₹${onlyOT.toFixed(0)}</span>
       </div>
       <div class="payout-row">
-        <span class="payout-label">🍱 Food Charges <span style="font-size:11px;color:var(--text3)">(${data.food_days || 0} days)</span></span>
-        <span class="payout-val">₹${totalFood.toFixed(0)}</span>
+        <span class="p-label">☀️ Sunday OT <small>(${sundayDays} days)</small></span>
+        <span class="p-val">₹${sundayAmt.toFixed(0)}</span>
       </div>
       <div class="payout-row">
-        <span class="payout-label">📱 Mobile Recharge</span>
-        <span class="payout-val">₹${mobile}</span>
+        <span class="p-label">🍱 Food Charges <small>(${data.food_days || 0} days)</small></span>
+        <span class="p-val">₹${totalFood.toFixed(0)}</span>
       </div>
       <div class="payout-row">
-        <span class="payout-label">🏖️ Leave Payout <span style="font-size:11px;color:var(--text3)">(${leaveCount} × ₹${perDay.toFixed(0)})</span></span>
-        <span class="payout-val">₹${leavePay.toFixed(0)}</span>
+        <span class="p-label">📱 Mobile Recharge</span>
+        <span class="p-val">₹${mobile}</span>
       </div>
-      <div class="payout-row total-row">
-        <span style="font-size:15px;font-weight:700;color:var(--text);">💰 Total Payout</span>
-        <span class="payout-val highlight">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</span>
+      <div class="payout-row">
+        <span class="p-label">🏖️ Leave <small>(${leaveCount} × ₹${perDay.toFixed(0)})</small></span>
+        <span class="p-val">₹${leavePay.toFixed(0)}</span>
+      </div>
+      <div class="payout-row final">
+        <span class="p-label" style="color:var(--text);font-size:15px;font-weight:900;">💰 Total Payout</span>
+        <span class="p-val final-val">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</span>
       </div>
     `;
   }
