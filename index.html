@@ -46,7 +46,6 @@
       overflow-x: hidden;
     }
 
-    /* Background grain texture */
     body::before {
       content: '';
       position: fixed;
@@ -71,87 +70,49 @@
       top: 0;
       z-index: 100;
     }
-
-    .header-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .header-brand { display: flex; align-items: center; gap: 10px; }
     .header-icon {
-      width: 38px;
-      height: 38px;
+      width: 38px; height: 38px;
       background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%);
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       font-size: 18px;
       box-shadow: 0 4px 14px rgba(59,130,246,0.35);
     }
-
-    .header-title {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      color: var(--text);
-    }
-
-    .header-date {
-      font-size: 11px;
-      color: var(--text3);
-      font-weight: 500;
-      margin-top: 1px;
-      font-family: 'Space Mono', monospace;
-    }
+    .header-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
+    .header-date { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 1px; font-family: 'Space Mono', monospace; }
 
     /* ─── BOTTOM NAV ─── */
     .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 430px;
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 430px;
       background: rgba(8,12,20,0.95);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top: 1px solid var(--border);
-      display: flex;
-      z-index: 200;
+      display: flex; z-index: 200;
       padding: 4px 8px 8px;
     }
-
     .nav-btn {
-      flex: 1;
-      padding: 10px 0 8px;
-      background: none;
-      border: none;
+      flex: 1; padding: 10px 0 8px;
+      background: none; border: none;
       color: var(--text3);
       font-family: 'DM Sans', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
+      font-size: 10px; font-weight: 600;
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
       transition: all 0.2s;
       border-radius: 10px;
       letter-spacing: 0.02em;
       text-transform: uppercase;
     }
-
     .nav-icon { font-size: 20px; line-height: 1; }
-
-    .nav-btn.active {
-      color: var(--accent);
-      background: rgba(59,130,246,0.08);
-    }
+    .nav-btn.active { color: var(--accent); background: rgba(59,130,246,0.08); }
 
     /* ─── SCREENS ─── */
     .screen { display: none; padding: 16px; position: relative; z-index: 1; }
-    .screen.active { display: block; }
+    .screen.active { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ─── CARDS ─── */
     .card {
@@ -163,7 +124,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .card::before {
       content: '';
       position: absolute;
@@ -171,719 +131,287 @@
       height: 1px;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
     }
-
     .card-label {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+      font-size: 10px; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.1em;
       margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      display: flex; align-items: center; gap: 6px;
     }
+    .card-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    .card-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ─── STATUS SECTION ─── */
-    .status-hero {
-      text-align: center;
-      padding: 10px 0 6px;
-      margin-bottom: 20px;
-    }
-
+    /* ─── STATUS ─── */
+    .status-hero { text-align: center; padding: 10px 0 6px; margin-bottom: 20px; }
     .status-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 7px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text2);
-      margin-bottom: 16px;
-      transition: all 0.3s;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 30px; padding: 7px 16px;
+      font-size: 12px; font-weight: 600; color: var(--text2);
+      margin-bottom: 16px; transition: all 0.3s;
     }
-
-    .status-indicator.status-in {
-      background: rgba(16,185,129,0.08);
-      border-color: rgba(16,185,129,0.2);
-      color: var(--green);
-    }
-
-    .status-indicator.status-done {
-      background: rgba(59,130,246,0.08);
-      border-color: rgba(59,130,246,0.2);
-      color: var(--accent);
-    }
-
-    .pulse {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--text3);
-      flex-shrink: 0;
-    }
-
-    .pulse.green {
-      background: var(--green);
-      box-shadow: 0 0 0 0 rgba(16,185,129,0.6);
-      animation: pulse-anim 1.5s ease infinite;
-    }
-
+    .status-indicator.status-in { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); color: var(--green); }
+    .status-indicator.status-done { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.2); color: var(--accent); }
+    .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+    .pulse.green { background: var(--green); box-shadow: 0 0 0 0 rgba(16,185,129,0.6); animation: pulse-anim 1.5s ease infinite; }
     .pulse.blue { background: var(--accent); }
-
     @keyframes pulse-anim {
-      0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); }
-      70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+      0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); }
+      70%  { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
       100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
     }
-
-    .status-time-display {
-      font-family: 'Space Mono', monospace;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text2);
-      letter-spacing: 0.05em;
-    }
+    .status-time-display { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text2); letter-spacing: 0.05em; }
 
     /* ─── BUTTONS ─── */
     .btn-main {
-      width: 100%;
-      padding: 17px;
-      border-radius: var(--radius-sm);
-      border: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
+      width: 100%; padding: 17px;
+      border-radius: var(--radius-sm); border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
       cursor: pointer;
       transition: transform 0.1s, opacity 0.2s, box-shadow 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      margin-bottom: 10px;
-      letter-spacing: -0.1px;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      margin-bottom: 10px; letter-spacing: -0.1px;
     }
-
     .btn-main:active { transform: scale(0.97); }
     .btn-main:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
     .btn-main:last-child { margin-bottom: 0; }
-
-    .btn-checkin {
-      background: var(--green);
-      color: #052e16;
-      box-shadow: 0 4px 20px rgba(16,185,129,0.3);
-    }
-
-    .btn-checkin:not(:disabled):hover {
-      box-shadow: 0 6px 28px rgba(16,185,129,0.45);
-    }
-
-    .btn-checkout {
-      background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%);
-      color: #fff;
-      box-shadow: 0 4px 20px rgba(59,130,246,0.3);
-    }
-
-    .btn-checkout:not(:disabled):hover {
-      box-shadow: 0 6px 28px rgba(59,130,246,0.45);
-    }
-
+    .btn-checkin { background: var(--green); color: #052e16; box-shadow: 0 4px 20px rgba(16,185,129,0.3); }
+    .btn-checkout { background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%); color: #fff; box-shadow: 0 4px 20px rgba(59,130,246,0.3); }
     .btn-secondary {
-      width: 100%;
-      padding: 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border2);
-      background: var(--card2);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
+      width: 100%; padding: 14px;
+      border-radius: var(--radius-sm); border: 1px solid var(--border2);
+      background: var(--card2); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer;
     }
-
-    .btn-secondary:hover { background: var(--card3); border-color: var(--text3); }
 
     /* ─── TOGGLE ─── */
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 4px 0;
-    }
-
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
     .toggle-label { font-size: 15px; font-weight: 600; }
     .toggle-sub { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 2px; }
     .toggle-input { opacity: 0; width: 0; height: 0; position: absolute; }
-
     .toggle-slider {
-      display: block;
-      width: 50px;
-      height: 26px;
-      background: var(--card3);
-      border-radius: 13px;
-      cursor: pointer;
-      transition: background 0.25s;
-      position: relative;
+      display: block; width: 50px; height: 26px;
+      background: var(--card3); border-radius: 13px;
+      cursor: pointer; transition: background 0.25s; position: relative;
       border: 1px solid var(--border2);
     }
-
     .toggle-slider::after {
-      content: '';
-      position: absolute;
-      top: 3px; left: 3px;
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: var(--text3);
+      content: ''; position: absolute;
+      top: 3px; left: 3px; width: 18px; height: 18px;
+      border-radius: 50%; background: var(--text3);
       transition: transform 0.25s, background 0.25s;
     }
-
-    .toggle-input:checked + .toggle-slider {
-      background: rgba(245,158,11,0.2);
-      border-color: rgba(245,158,11,0.3);
-    }
-
-    .toggle-input:checked + .toggle-slider::after {
-      transform: translateX(24px);
-      background: var(--gold);
-      box-shadow: 0 0 8px rgba(245,158,11,0.5);
-    }
+    .toggle-input:checked + .toggle-slider { background: rgba(245,158,11,0.2); border-color: rgba(245,158,11,0.3); }
+    .toggle-input:checked + .toggle-slider::after { transform: translateX(24px); background: var(--gold); box-shadow: 0 0 8px rgba(245,158,11,0.5); }
 
     /* ─── NOTES ─── */
     .notes-input {
-      width: 100%;
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      padding: 12px 14px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      resize: none;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      line-height: 1.5;
+      width: 100%; background: var(--card2);
+      border: 1px solid var(--border); border-radius: var(--radius-xs);
+      padding: 12px 14px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      resize: none; outline: none; transition: border-color 0.2s, box-shadow 0.2s; line-height: 1.5;
     }
-
-    .notes-input:focus {
-      border-color: rgba(59,130,246,0.3);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.05);
-    }
-
+    .notes-input:focus { border-color: rgba(59,130,246,0.3); box-shadow: 0 0 0 3px rgba(59,130,246,0.05); }
     .notes-input::placeholder { color: var(--text3); }
 
     /* ─── MODALS ─── */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(4px);
-      z-index: 500;
-      align-items: flex-end;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);
+      z-index: 500; align-items: flex-end; justify-content: center;
     }
-
     .modal-overlay.open { display: flex; }
-
     .modal-box {
-      background: var(--card);
-      border-radius: 24px 24px 0 0;
-      padding: 12px 20px 48px;
-      width: 100%;
-      max-width: 430px;
+      background: var(--card); border-radius: 24px 24px 0 0;
+      padding: 12px 20px 48px; width: 100%; max-width: 430px;
       border-top: 1px solid var(--border2);
       animation: slideUp 0.28s cubic-bezier(0.22,1,0.36,1);
     }
-
-    .modal-handle {
-      width: 36px;
-      height: 4px;
-      background: var(--border2);
-      border-radius: 2px;
-      margin: 8px auto 20px;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(100%); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
-    }
-
+    .modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 8px auto 20px; }
+    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.2px; }
     .modal-sub { font-size: 13px; color: var(--text2); font-weight: 500; margin-bottom: 20px; line-height: 1.4; }
-
     .modal-options { display: flex; gap: 10px; }
-
     .modal-opt {
-      flex: 1;
-      padding: 18px 12px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--card2);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
+      flex: 1; padding: 18px 12px;
+      border-radius: var(--radius-sm); border: 1px solid var(--border);
+      background: var(--card2); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; text-align: center; transition: all 0.2s;
     }
-
     .modal-opt:active { transform: scale(0.97); background: var(--card3); }
     .modal-opt .opt-icon { font-size: 28px; display: block; margin-bottom: 8px; }
 
-    /* ─── TIME OFFSET MODAL ─── */
+    /* ─── TIME OFFSET ─── */
     .cur-time {
-      text-align: center;
-      margin-bottom: 20px;
-      background: var(--card2);
-      border-radius: var(--radius-sm);
-      padding: 16px 12px;
-      border: 1px solid var(--border);
+      text-align: center; margin-bottom: 20px;
+      background: var(--card2); border-radius: var(--radius-sm);
+      padding: 16px 12px; border: 1px solid var(--border);
     }
-
-    .cur-label {
-      font-size: 10px;
-      color: var(--text3);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .cur-val {
-      font-family: 'Space Mono', monospace;
-      font-size: 44px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.2;
-      letter-spacing: -1px;
-    }
-
+    .cur-label { font-size: 10px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+    .cur-val { font-family: 'Space Mono', monospace; font-size: 44px; font-weight: 700; color: var(--text); line-height: 1.2; letter-spacing: -1px; }
     .cur-sub { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 2px; }
-
     .time-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
     .time-opt {
-      padding: 20px 10px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--card2);
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.18s;
+      padding: 20px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--card2);
+      cursor: pointer; text-align: center; transition: all 0.18s;
     }
-
-    .time-opt:active {
-      border-color: var(--green);
-      background: rgba(16,185,129,0.08);
-      transform: scale(0.97);
-    }
-
-    .time-opt.co:active {
-      border-color: var(--accent);
-      background: rgba(59,130,246,0.08);
-    }
-
-    .opt-min {
-      font-family: 'Space Mono', monospace;
-      font-size: 30px;
-      font-weight: 700;
-      display: block;
-      color: var(--green);
-      line-height: 1;
-    }
-
+    .time-opt:active { border-color: var(--green); background: rgba(16,185,129,0.08); transform: scale(0.97); }
+    .time-opt.co:active { border-color: var(--accent); background: rgba(59,130,246,0.08); }
+    .opt-min { font-family: 'Space Mono', monospace; font-size: 30px; font-weight: 700; display: block; color: var(--green); line-height: 1; }
     .opt-min.blue { color: var(--accent); }
     .opt-lbl { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 6px; display: block; letter-spacing: 0.02em; }
 
     /* ─── DASHBOARD ─── */
-    .month-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
-    }
-
+    .month-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
     .month-nav {
-      width: 38px;
-      height: 38px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text2);
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.18s;
+      width: 38px; height: 38px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text2); font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.18s;
     }
-
-    .month-nav:hover { background: var(--card2); border-color: var(--border2); }
-
     .month-label { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
 
-    /* ─── SUMMARY GRID ─── */
-    .summary-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
+    /* ─── SUMMARY TILES ─── */
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
     .summary-tile {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 14px 14px;
-      position: relative;
-      overflow: hidden;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px;
+      position: relative; overflow: hidden;
     }
-
-    .summary-tile::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      right: 0; height: 2px;
-      background: currentColor;
-      opacity: 0.12;
-    }
-
-    .tile-icon {
-      font-size: 20px;
-      margin-bottom: 8px;
-      display: block;
-    }
-
+    .tile-icon { font-size: 20px; margin-bottom: 8px; display: block; }
     .tile-val {
-      font-family: 'Space Mono', monospace;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--gold);
-      line-height: 1;
-      letter-spacing: -0.5px;
+      font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700;
+      color: var(--gold); line-height: 1; letter-spacing: -0.5px;
     }
-
-    .tile-val.green { color: var(--green); }
-    .tile-val.blue  { color: var(--accent); }
+    .tile-val.green  { color: var(--green); }
+    .tile-val.blue   { color: var(--accent); }
     .tile-val.purple { color: var(--purple); }
-
     .tile-label { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 5px; }
 
     /* ─── PAYOUT CARD ─── */
     .payout-card {
-      background: var(--card);
-      border: 1px solid rgba(245,158,11,0.2);
-      border-radius: var(--radius);
-      padding: 22px 20px;
-      margin-bottom: 14px;
-      position: relative;
-      overflow: hidden;
+      background: var(--card); border: 1px solid rgba(245,158,11,0.2);
+      border-radius: var(--radius); padding: 22px 20px;
+      margin-bottom: 14px; position: relative; overflow: hidden;
     }
-
     .payout-card::before {
-      content: '';
-      position: absolute;
-      top: -60px; right: -60px;
-      width: 160px; height: 160px;
-      border-radius: 50%;
+      content: ''; position: absolute; top: -60px; right: -60px;
+      width: 160px; height: 160px; border-radius: 50%;
       background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
       pointer-events: none;
     }
-
-    .payout-heading {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 6px;
-    }
-
-    .payout-total {
-      font-family: 'Space Mono', monospace;
-      font-size: 40px;
-      font-weight: 700;
-      color: var(--gold);
-      line-height: 1.1;
-      margin-bottom: 20px;
-      letter-spacing: -1px;
-    }
-
-    .payout-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 0 0 14px;
-    }
-
-    .payout-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-    }
-
+    .payout-heading { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .payout-total { font-family: 'Space Mono', monospace; font-size: 40px; font-weight: 700; color: var(--gold); line-height: 1.1; margin-bottom: 20px; letter-spacing: -1px; }
+    .payout-divider { height: 1px; background: var(--border); margin: 0 0 14px; }
+    .payout-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
     .payout-row + .payout-row { border-top: 1px solid var(--border); }
-
-    .payout-row.total-row {
-      padding-top: 14px;
-      margin-top: 6px;
-      border-top: 1px solid var(--border2) !important;
-    }
-
+    .payout-row.total-row { padding-top: 14px; margin-top: 6px; border-top: 1px solid var(--border2) !important; }
     .payout-label { font-size: 13px; font-weight: 500; color: var(--text2); }
     .payout-val { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; color: var(--green); }
     .payout-val.highlight { font-size: 18px; color: var(--gold); }
 
-    /* ─── LOG ITEMS ─── */
+    /* ─── LOG ─── */
     .log-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 14px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      transition: border-color 0.2s;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px;
+      margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px;
     }
-
-    .log-item:hover { border-color: var(--border2); }
-
     .log-date-box {
-      background: var(--card2);
-      border-radius: var(--radius-xs);
-      padding: 8px 10px;
-      text-align: center;
-      flex-shrink: 0;
-      min-width: 46px;
+      background: var(--card2); border-radius: var(--radius-xs);
+      padding: 8px 10px; text-align: center; flex-shrink: 0; min-width: 46px;
       border: 1px solid var(--border);
     }
-
     .log-day { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; line-height: 1; color: var(--text); }
     .log-mon { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
-
     .log-details { flex: 1; min-width: 0; }
-
-    .log-times {
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      color: var(--text3);
-      font-weight: 400;
-      margin-bottom: 5px;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
+    .log-times { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text3); font-weight: 400; margin-bottom: 5px; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
     .log-ot { font-size: 16px; font-weight: 700; color: var(--green); letter-spacing: -0.2px; }
     .log-ot.zero { color: var(--text3); }
     .log-breakdown { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 4px; line-height: 1.4; }
     .log-notes { font-size: 11px; color: rgba(245,158,11,0.8); font-weight: 500; margin-top: 4px; font-style: italic; }
-
-    .log-badge {
-      font-size: 9px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 20px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    .badge-sunday  { background: rgba(245,158,11,0.12);  color: var(--gold);   border: 1px solid rgba(245,158,11,0.2); }
+    .log-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .badge-sunday  { background: rgba(245,158,11,0.12); color: var(--gold); border: 1px solid rgba(245,158,11,0.2); }
     .badge-fullday { background: rgba(59,130,246,0.12); color: var(--accent); border: 1px solid rgba(59,130,246,0.2); }
 
     /* ─── SETTINGS ─── */
     .input-group { margin-bottom: 14px; }
-
-    .input-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 7px;
-      display: block;
-    }
-
+    .input-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px; display: block; }
     .input-field {
-      width: 100%;
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      padding: 13px 14px;
-      color: var(--text);
-      font-family: 'Space Mono', monospace;
-      font-size: 17px;
-      font-weight: 700;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; background: var(--card2); border: 1px solid var(--border);
+      border-radius: var(--radius-xs); padding: 13px 14px; color: var(--text);
+      font-family: 'Space Mono', monospace; font-size: 17px; font-weight: 700;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
     }
-
-    .input-field:focus {
-      border-color: rgba(59,130,246,0.4);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.06);
-    }
-
+    .input-field:focus { border-color: rgba(59,130,246,0.4); box-shadow: 0 0 0 3px rgba(59,130,246,0.06); }
     .save-btn {
-      width: 100%;
-      padding: 16px;
-      border-radius: var(--radius-sm);
-      border: none;
+      width: 100%; padding: 16px; border-radius: var(--radius-sm); border: none;
       background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%);
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 6px;
-      box-shadow: 0 4px 20px rgba(59,130,246,0.25);
+      color: #fff; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
+      cursor: pointer; margin-top: 6px; box-shadow: 0 4px 20px rgba(59,130,246,0.25);
       transition: box-shadow 0.2s, transform 0.1s;
     }
-
     .save-btn:active { transform: scale(0.98); }
-    .save-btn:hover { box-shadow: 0 6px 28px rgba(59,130,246,0.4); }
 
-    /* Rules card */
     .rules-grid { display: flex; flex-direction: column; gap: 0; }
-
-    .rule-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
+    .rule-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
     .rule-row:last-child { border-bottom: none; padding-bottom: 0; }
-
     .rule-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
     .rule-text { font-size: 13px; color: var(--text2); font-weight: 500; line-height: 1.4; }
     .rule-highlight { color: var(--text); font-weight: 600; }
 
+    /* ─── SECTION LABEL ─── */
+    .section-label {
+      font-size: 10px; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::before { content: ''; width: 3px; height: 12px; background: var(--accent); border-radius: 2px; flex-shrink: 0; }
+
     /* ─── TOAST ─── */
     .toast {
-      position: fixed;
-      bottom: 104px;
-      left: 50%;
+      position: fixed; bottom: 104px; left: 50%;
       transform: translateX(-50%) translateY(8px);
-      background: var(--card);
-      border: 1px solid var(--border2);
-      border-radius: 30px;
-      padding: 11px 24px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-      z-index: 999;
-      opacity: 0;
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 30px; padding: 11px 24px;
+      font-size: 13px; font-weight: 600; color: var(--text);
+      z-index: 999; opacity: 0;
       transition: opacity 0.25s, transform 0.25s;
-      white-space: nowrap;
-      pointer-events: none;
+      white-space: nowrap; pointer-events: none;
       box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     }
-
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ─── EMPTY STATE ─── */
-    .empty-state {
-      text-align: center;
-      padding: 50px 20px;
-      color: var(--text3);
-    }
-
+    /* ─── EMPTY ─── */
+    .empty-state { text-align: center; padding: 50px 20px; color: var(--text3); }
     .empty-icon { font-size: 42px; margin-bottom: 12px; opacity: 0.5; }
     .empty-text { font-size: 14px; font-weight: 500; }
 
-    .section-label {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .section-label::before {
-      content: '';
-      width: 3px; height: 12px;
-      background: var(--accent);
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-
-    /* ─── CHECKIN CARD SPECIFIC ─── */
+    /* ─── CHECKIN CARD ─── */
     .checkin-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 20px 18px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
+      background: var(--card); border-radius: var(--radius);
+      padding: 20px 18px; margin-bottom: 12px;
+      border: 1px solid var(--border); position: relative; overflow: hidden;
     }
-
     .checkin-card::after {
-      content: '';
-      position: absolute;
-      bottom: -30px; right: -30px;
-      width: 100px; height: 100px;
-      border-radius: 50%;
+      content: ''; position: absolute; bottom: -30px; right: -30px;
+      width: 100px; height: 100px; border-radius: 50%;
       background: radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%);
       pointer-events: none;
     }
 
-
-    /* ─── SCREEN LOADER ─── */
+    /* ─── LOADER ─── */
     .screen-loader {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s;
+      position: fixed; inset: 0; background: var(--bg); z-index: 999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+      opacity: 0; pointer-events: none; transition: opacity 0.15s;
     }
-    .screen-loader.show {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .loader-spinner {
-      width: 40px; height: 40px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
+    .screen-loader.show { opacity: 1; pointer-events: all; }
+    .loader-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loader-text {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text3);
-      letter-spacing: 0.04em;
-    }
-    /* Animation for screen transitions */
-    .screen.active { animation: fadeIn 0.2s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .loader-text { font-size: 13px; font-weight: 600; color: var(--text3); letter-spacing: 0.04em; }
   </style>
 </head>
 <body>
@@ -899,12 +427,11 @@
   <div style="font-size:26px">👷</div>
 </div>
 
-<!-- ══════════════════════════════ HOME ══════════════════════════════ -->
+<!-- ══════════════════════ HOME ══════════════════════ -->
 <div class="screen active" id="screen-home">
 
   <div class="checkin-card">
     <div class="card-label">Today's Status</div>
-
     <div class="status-hero">
       <div class="status-indicator" id="statusIndicator">
         <div class="pulse" id="statusDot"></div>
@@ -912,13 +439,8 @@
       </div>
       <div class="status-time-display" id="statusTime"></div>
     </div>
-
-    <button class="btn-main btn-checkin" id="btnCheckin" onclick="openCheckinModal()">
-      ✅&nbsp; Check In
-    </button>
-    <button class="btn-main btn-checkout" id="btnCheckout" onclick="openCheckoutTimeModal()" disabled style="margin-bottom:0">
-      🚪&nbsp; Check Out
-    </button>
+    <button class="btn-main btn-checkin" id="btnCheckin" onclick="openCheckinModal()">✅&nbsp; Check In</button>
+    <button class="btn-main btn-checkout" id="btnCheckout" onclick="openCheckoutTimeModal()" disabled style="margin-bottom:0">🚪&nbsp; Check Out</button>
   </div>
 
   <div class="card">
@@ -942,7 +464,7 @@
 
 </div>
 
-<!-- ══════════════════════════════ DASHBOARD ══════════════════════════════ -->
+<!-- ══════════════════════ DASHBOARD ══════════════════════ -->
 <div class="screen" id="screen-dashboard">
 
   <div class="month-header">
@@ -962,7 +484,7 @@
 
 </div>
 
-<!-- ══════════════════════════════ SETTINGS ══════════════════════════════ -->
+<!-- ══════════════════════ SETTINGS ══════════════════════ -->
 <div class="screen" id="screen-settings">
 
   <div class="card">
@@ -988,7 +510,6 @@
 
   <div class="card">
     <div class="card-label">OT Rules</div>
-    <!-- Masked rules — shown only after employee key -->
     <div id="rulesLocked" style="text-align:center;padding:18px 0 10px;">
       <div style="font-size:32px;margin-bottom:10px;letter-spacing:6px;color:var(--text3);">••••••••</div>
       <div style="font-size:12px;color:var(--text3);font-weight:600;margin-bottom:16px;">Rules dekhne ke liye key chahiye</div>
@@ -1018,7 +539,7 @@
 
 </div>
 
-<!-- ══════════════════════════════ BOTTOM NAV ══════════════════════════════ -->
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-btn active" id="nav-home" onclick="switchScreen('home')">
     <span class="nav-icon">🏠</span>Home
@@ -1031,35 +552,22 @@
   </button>
 </nav>
 
-<!-- ══ MODAL: CHECK-IN TIME OFFSET ══ -->
+<!-- ══ MODAL: Check-in offset ══ -->
 <div class="modal-overlay" id="checkinTimeModal">
   <div class="modal-box">
     <div class="modal-handle"></div>
     <div class="modal-title">🏠 Ghar se nikal rahe ho?</div>
     <div class="modal-sub">Check-in time select karo</div>
-
     <div class="cur-time">
       <div class="cur-label">Abhi ka time</div>
       <div class="cur-val" id="ciCurrentTime">--:--</div>
       <div class="cur-sub" id="ciPreview">Check-in = current time</div>
     </div>
-
-    <!-- Row 1: +30 and +40 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-      <div class="time-opt" onclick="doCheckin(30)">
-        <span class="opt-min">+30</span>
-        <span class="opt-lbl">minute add</span>
-      </div>
-      <div class="time-opt" onclick="doCheckin(40)">
-        <span class="opt-min">+40</span>
-        <span class="opt-lbl">minute add</span>
-      </div>
+      <div class="time-opt" onclick="doCheckin(30)"><span class="opt-min">+30</span><span class="opt-lbl">minute add</span></div>
+      <div class="time-opt" onclick="doCheckin(40)"><span class="opt-min">+40</span><span class="opt-lbl">minute add</span></div>
     </div>
-
-    <!-- Row 2: Now (full width) + Custom (full width) stacked horizontally -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-
-      <!-- NOW tile -->
       <div class="time-opt" onclick="doCheckin(0)"
         style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:10px;padding:16px 12px;">
         <span style="font-size:26px;line-height:1;">🕐</span>
@@ -1068,10 +576,8 @@
           <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:3px;">Current time</div>
         </div>
       </div>
-
-      <!-- CUSTOM tile -->
       <div class="time-opt" id="ciCustomTile"
-        style="padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;"
+        style="padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;"
         onclick="activateCiCustom()">
         <div id="ciCustomIdle" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
           <span style="font-size:22px;line-height:1;">✏️</span>
@@ -1080,49 +586,33 @@
         <div id="ciCustomActive" style="display:none;width:100%;text-align:center;">
           <div style="font-size:10px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Minutes add</div>
           <input type="number" id="ciCustomInput" min="0" max="120"
-            style="width:100%;font-family:'Space Mono',monospace;font-size:26px;font-weight:700;
-                   background:transparent;border:none;border-bottom:2px solid var(--green);
-                   color:var(--green);text-align:center;outline:none;padding-bottom:2px;"
+            style="width:100%;font-family:'Space Mono',monospace;font-size:26px;font-weight:700;background:transparent;border:none;border-bottom:2px solid var(--green);color:var(--green);text-align:center;outline:none;padding-bottom:2px;"
             placeholder="0"
             oninput="ciCustomPreview(this.value)"
-            onkeydown="if(event.key==='Enter'){ event.preventDefault(); doCheckin(parseInt(this.value)||0); }" />
+            onkeydown="if(event.key==='Enter'){event.preventDefault();doCheckin(parseInt(this.value)||0);}" />
           <div style="font-size:10px;color:var(--text3);margin-top:6px;font-weight:600;">Enter dabao ✓</div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL: CHECK-OUT TIME OFFSET ══ -->
+<!-- ══ MODAL: Check-out offset ══ -->
 <div class="modal-overlay" id="checkoutTimeModal">
   <div class="modal-box">
     <div class="modal-handle"></div>
     <div class="modal-title">🏠 Ghar pohonch gaye?</div>
     <div class="modal-sub">Checkout time select karo</div>
-
     <div class="cur-time">
       <div class="cur-label">Abhi ka time</div>
       <div class="cur-val" id="coCurrentTime">--:--</div>
       <div class="cur-sub" id="coPreview">Checkout = current time</div>
     </div>
-
-    <!-- Row 1: −30 and −40 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-      <div class="time-opt co" onclick="selectCheckoutOffset(30)">
-        <span class="opt-min blue">−30</span>
-        <span class="opt-lbl">minute minus</span>
-      </div>
-      <div class="time-opt co" onclick="selectCheckoutOffset(40)">
-        <span class="opt-min blue">−40</span>
-        <span class="opt-lbl">minute minus</span>
-      </div>
+      <div class="time-opt co" onclick="selectCheckoutOffset(30)"><span class="opt-min blue">−30</span><span class="opt-lbl">minute minus</span></div>
+      <div class="time-opt co" onclick="selectCheckoutOffset(40)"><span class="opt-min blue">−40</span><span class="opt-lbl">minute minus</span></div>
     </div>
-
-    <!-- Row 2: Now + Custom -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-
-      <!-- NOW tile -->
       <div class="time-opt co" onclick="selectCheckoutOffset(0)"
         style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:10px;padding:16px 12px;">
         <span style="font-size:26px;line-height:1;">🕐</span>
@@ -1131,10 +621,8 @@
           <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:3px;">Current time</div>
         </div>
       </div>
-
-      <!-- CUSTOM tile -->
       <div class="time-opt co" id="coCustomTile"
-        style="padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;"
+        style="padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;"
         onclick="activateCoCustom()">
         <div id="coCustomIdle" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
           <span style="font-size:22px;line-height:1;">✏️</span>
@@ -1143,33 +631,26 @@
         <div id="coCustomActive" style="display:none;width:100%;text-align:center;">
           <div style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Minutes minus</div>
           <input type="number" id="coCustomInput" min="0" max="120"
-            style="width:100%;font-family:'Space Mono',monospace;font-size:26px;font-weight:700;
-                   background:transparent;border:none;border-bottom:2px solid var(--accent);
-                   color:var(--accent);text-align:center;outline:none;padding-bottom:2px;"
+            style="width:100%;font-family:'Space Mono',monospace;font-size:26px;font-weight:700;background:transparent;border:none;border-bottom:2px solid var(--accent);color:var(--accent);text-align:center;outline:none;padding-bottom:2px;"
             placeholder="0"
             oninput="coCustomPreview(this.value)"
-            onkeydown="if(event.key==='Enter'){ event.preventDefault(); selectCheckoutOffset(parseInt(this.value)||0); }" />
+            onkeydown="if(event.key==='Enter'){event.preventDefault();selectCheckoutOffset(parseInt(this.value)||0);}" />
           <div style="font-size:10px;color:var(--text3);margin-top:6px;font-weight:600;">Enter dabao ✓</div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL: Same/Different Day ══ -->
+<!-- ══ MODAL: Same/Alag Din ══ -->
 <div class="modal-overlay" id="checkoutModal">
   <div class="modal-box">
     <div class="modal-handle"></div>
     <div class="modal-title">Checkout Type 🤔</div>
     <div class="modal-sub">Aaj check-in tha ya kal raat se continue hai?</div>
     <div class="modal-options">
-      <div class="modal-opt" onclick="doCheckout('same')">
-        <span class="opt-icon">📅</span>Same Din
-      </div>
-      <div class="modal-opt" onclick="openDiffDayModal()">
-        <span class="opt-icon">🌙</span>Alag Din<br><small style="font-weight:500;color:var(--text3);font-size:11px">Kal raat se</small>
-      </div>
+      <div class="modal-opt" onclick="doCheckout('same')"><span class="opt-icon">📅</span>Same Din</div>
+      <div class="modal-opt" onclick="openDiffDayModal()"><span class="opt-icon">🌙</span>Alag Din<br><small style="font-weight:500;color:var(--text3);font-size:11px">Kal raat se</small></div>
     </div>
   </div>
 </div>
@@ -1191,8 +672,7 @@
   </div>
 </div>
 
-
-<!-- ══ MODAL: EMPLOYEE KEY ══ -->
+<!-- ══ MODAL: Employee Key ══ -->
 <div class="modal-overlay" id="employeeKeyModal">
   <div class="modal-box">
     <div class="modal-handle"></div>
@@ -1203,9 +683,7 @@
       <input type="password" class="input-field" id="employeeKeyInput" placeholder="••••••••••" autocomplete="off"
         onkeydown="if(event.key==='Enter') verifyEmployeeKey()" />
     </div>
-    <div id="empKeyError" style="font-size:12px;color:var(--red);font-weight:600;margin-bottom:12px;display:none;">
-      ❌ Wrong key! Access denied.
-    </div>
+    <div id="empKeyError" style="font-size:12px;color:var(--red);font-weight:600;margin-bottom:12px;display:none;">❌ Wrong key! Access denied.</div>
     <div style="display:flex;gap:10px;">
       <button class="btn-secondary" onclick="closeEmployeeKeyModal()" style="flex:1;">Cancel</button>
       <button class="btn-main btn-checkout" onclick="verifyEmployeeKey()" style="flex:1;margin:0;">Confirm</button>
@@ -1213,7 +691,7 @@
   </div>
 </div>
 
-<!-- ══ MODAL: SALARY REVEAL ══ -->
+<!-- ══ MODAL: Salary Reveal ══ -->
 <div class="modal-overlay" id="salaryRevealModal">
   <div class="modal-box">
     <div class="modal-handle"></div>
@@ -1226,7 +704,6 @@
     <button class="save-btn" onclick="document.getElementById('salaryRevealModal').classList.remove('open')">Close</button>
   </div>
 </div>
-
 
 <div class="screen-loader" id="screenLoader">
   <div class="loader-spinner"></div>
@@ -1241,7 +718,6 @@
   let dashYear  = new Date().getFullYear();
   let pendingCheckoutOffset = 0;
 
-  // Header date
   document.getElementById('headerDate').textContent = new Date().toLocaleDateString('en-IN', {
     weekday:'short', day:'numeric', month:'short', year:'numeric'
   }).toUpperCase();
@@ -1249,35 +725,27 @@
   loadSettings();
   fetchTodayStatus();
 
-  // ── SCREEN NAV ──
-  var SCREEN_LABELS = { home: 'Home', dashboard: 'Dashboard', settings: 'Settings' };
-
+  // ── NAV ──
   function switchScreen(name) {
     var loader = document.getElementById('screenLoader');
-    var loaderText = document.getElementById('loaderText');
-    loaderText.textContent = SCREEN_LABELS[name] + ' khul raha hai...';
+    document.getElementById('loaderText').textContent = name.charAt(0).toUpperCase() + name.slice(1) + ' khul raha hai...';
     loader.classList.add('show');
-
     setTimeout(function() {
-      document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
-      document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('screen-' + name).classList.add('active');
       document.getElementById('nav-' + name).classList.add('active');
       if (name === 'dashboard') loadDashboard();
-
-      setTimeout(function() {
-        loader.classList.remove('show');
-      }, 180);
+      setTimeout(() => loader.classList.remove('show'), 180);
     }, 300);
   }
 
   // ── SETTINGS ──
-  const EMPLOYEE_KEY = 'Gangesh1972'; // Static employee key — change if needed
-  var empKeyAction = 'save'; // 'save' or 'show'
+  const EMPLOYEE_KEY = 'Gangesh1972';
+  var empKeyAction = 'save';
   var salaryVisible = false;
 
   function loadSettings() {
-    // Always load as masked — actual value hidden in password field
     const saved = localStorage.getItem('salary') || '28600';
     document.getElementById('salaryInput').value = saved;
     document.getElementById('salaryInput').type = 'password';
@@ -1286,12 +754,9 @@
   }
 
   function toggleSalaryVisibility() {
-    const input = document.getElementById('salaryInput');
-    if (!salaryVisible) {
-      // Needs key to reveal
-      openEmployeeKeyModal('show');
-    } else {
-      input.type = 'password';
+    if (!salaryVisible) { openEmployeeKeyModal('show'); }
+    else {
+      document.getElementById('salaryInput').type = 'password';
       salaryVisible = false;
       document.getElementById('eyeBtn').textContent = '👁️';
     }
@@ -1301,18 +766,9 @@
     empKeyAction = action;
     document.getElementById('employeeKeyInput').value = '';
     document.getElementById('empKeyError').style.display = 'none';
-    const title = document.getElementById('empModalTitle');
-    const sub   = document.getElementById('empModalSub');
-    if (action === 'save') {
-      title.textContent = '🔐 Confirm Save';
-      sub.textContent   = 'Salary save karne ke liye employee key daalo';
-    } else if (action === 'rules') {
-      title.textContent = '🔐 OT Rules';
-      sub.textContent   = 'Rules dekhne ke liye employee key daalo';
-    } else {
-      title.textContent = '🔐 Employee Key';
-      sub.textContent   = 'Salary dekhne ke liye employee key daalo';
-    }
+    const titles = { save: ['🔐 Confirm Save', 'Salary save karne ke liye key daalo'], show: ['🔐 Employee Key', 'Salary dekhne ke liye key daalo'], rules: ['🔐 OT Rules', 'Rules dekhne ke liye key daalo'] };
+    document.getElementById('empModalTitle').textContent = titles[action][0];
+    document.getElementById('empModalSub').textContent   = titles[action][1];
     document.getElementById('employeeKeyModal').classList.add('open');
     setTimeout(() => document.getElementById('employeeKeyInput').focus(), 300);
   }
@@ -1340,7 +796,6 @@
       showToast('✅ Salary saved!');
     } else if (empKeyAction === 'show') {
       const saved = localStorage.getItem('salary') || '28600';
-      // Show in reveal modal
       document.getElementById('salaryRevealAmount').textContent = '₹' + parseFloat(saved).toLocaleString('en-IN');
       document.getElementById('salaryRevealModal').classList.add('open');
     } else if (empKeyAction === 'rules') {
@@ -1354,58 +809,48 @@
     document.getElementById('rulesLocked').style.display = 'block';
   }
 
-  function saveSettings() {
-    openEmployeeKeyModal('save');
-  }
   function getSalary() { return parseFloat(localStorage.getItem('salary') || '28600'); }
 
-  // ── TIME HELPERS ──
+  // ── TIME ──
   function getToday() {
     const n = new Date();
     return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
   }
-  function getTimeWithOffset(offsetMins) {
-    const n = new Date();
-    n.setMinutes(n.getMinutes() + offsetMins);
+  function getTimeWithOffset(m) {
+    const n = new Date(); n.setMinutes(n.getMinutes() + m);
     return String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
   }
   function getNow() { return getTimeWithOffset(0); }
 
-  // ── TODAY STATUS ──
+  // ── STATUS ──
   async function fetchTodayStatus() {
     try {
       const res = await fetch('/api/record?date=' + getToday());
-      const data = await res.json();
-      renderHomeStatus(data.record || null);
+      const d   = await res.json();
+      renderHomeStatus(d.record || null);
     } catch(e) { renderHomeStatus(null); }
   }
 
   function renderHomeStatus(rec) {
-    const indicator = document.getElementById('statusIndicator');
-    const dot    = document.getElementById('statusDot');
-    const text   = document.getElementById('statusText');
-    const time   = document.getElementById('statusTime');
-    const btnIn  = document.getElementById('btnCheckin');
-    const btnOut = document.getElementById('btnCheckout');
-
+    const ind  = document.getElementById('statusIndicator');
+    const dot  = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    const time = document.getElementById('statusTime');
+    const bi   = document.getElementById('btnCheckin');
+    const bo   = document.getElementById('btnCheckout');
     if (!rec) {
-      indicator.className = 'status-indicator';
-      dot.className = 'pulse';
-      text.textContent = 'Check-in nahi hua';
-      time.textContent = '';
-      btnIn.disabled = false; btnOut.disabled = true;
+      ind.className = 'status-indicator'; dot.className = 'pulse';
+      text.textContent = 'Check-in nahi hua'; time.textContent = '';
+      bi.disabled = false; bo.disabled = true;
     } else if (rec.checkin_time && !rec.checkout_time) {
-      indicator.className = 'status-indicator status-in';
-      dot.className = 'pulse green';
-      text.textContent = 'Check-in ho gaya ✅';
-      time.textContent = rec.checkin_time;
-      btnIn.disabled = true; btnOut.disabled = false;
+      ind.className = 'status-indicator status-in'; dot.className = 'pulse green';
+      text.textContent = 'Check-in ho gaya ✅'; time.textContent = rec.checkin_time;
+      bi.disabled = true; bo.disabled = false;
     } else {
-      indicator.className = 'status-indicator status-done';
-      dot.className = 'pulse blue';
+      ind.className = 'status-indicator status-done'; dot.className = 'pulse blue';
       text.textContent = 'Aaj ka kaam khatam 🎉';
       time.textContent = rec.checkin_time + '  →  ' + rec.checkout_time;
-      btnIn.disabled = true; btnOut.disabled = true;
+      bi.disabled = true; bo.disabled = true;
     }
   }
 
@@ -1414,65 +859,54 @@
     const now = getNow();
     document.getElementById('ciCurrentTime').textContent = now;
     document.getElementById('ciPreview').textContent = 'Check-in = ' + now + ' (current)';
-    // Reset custom tile
     document.getElementById('ciCustomIdle').style.display = 'flex';
     document.getElementById('ciCustomActive').style.display = 'none';
     document.getElementById('ciCustomInput').value = '';
     document.getElementById('checkinTimeModal').classList.add('open');
   }
-
   function activateCiCustom() {
     document.getElementById('ciCustomIdle').style.display = 'none';
     document.getElementById('ciCustomActive').style.display = 'block';
-    setTimeout(function(){ document.getElementById('ciCustomInput').focus(); }, 50);
+    setTimeout(() => document.getElementById('ciCustomInput').focus(), 50);
   }
-
   function ciCustomPreview(val) {
     var mins = parseInt(val) || 0;
     var n = new Date(); n.setMinutes(n.getMinutes() + mins);
     var t = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
     document.getElementById('ciPreview').textContent = mins > 0 ? 'Check-in = ' + t + ' (+' + mins + ' min)' : 'Check-in = ' + getNow() + ' (current)';
   }
-
   async function doCheckin(addMins) {
     document.getElementById('checkinTimeModal').classList.remove('open');
     document.getElementById('btnCheckin').disabled = true;
-    const checkinTime = getTimeWithOffset(addMins);
+    const t = getTimeWithOffset(addMins);
     try {
       const res = await fetch('/api/checkin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          date: getToday(), checkin_time: checkinTime,
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: getToday(), checkin_time: t,
           is_sunday: document.getElementById('sundayToggle').checked,
-          notes: document.getElementById('notesInput').value.trim(),
-          salary: getSalary()
-        })
+          notes: document.getElementById('notesInput').value.trim(), salary: getSalary() })
       });
-      const data = await res.json();
-      if (data.success) { renderHomeStatus(data.record); showToast('✅ Check-in: ' + checkinTime); }
-      else { showToast('❌ ' + (data.error || 'Error')); document.getElementById('btnCheckin').disabled = false; }
+      const d = await res.json();
+      if (d.success) { renderHomeStatus(d.record); showToast('✅ Check-in: ' + t); }
+      else { showToast('❌ ' + (d.error || 'Error')); document.getElementById('btnCheckin').disabled = false; }
     } catch(e) { showToast('❌ Network error'); document.getElementById('btnCheckin').disabled = false; }
   }
 
   // ── CHECK-OUT ──
   function openCheckoutTimeModal() {
-    var now = getNow();
+    const now = getNow();
     document.getElementById('coCurrentTime').textContent = now;
     document.getElementById('coPreview').textContent = 'Checkout = ' + now + ' (current)';
-    // Reset custom tile
     document.getElementById('coCustomIdle').style.display = 'flex';
     document.getElementById('coCustomActive').style.display = 'none';
     document.getElementById('coCustomInput').value = '';
     document.getElementById('checkoutTimeModal').classList.add('open');
   }
-
   function activateCoCustom() {
     document.getElementById('coCustomIdle').style.display = 'none';
     document.getElementById('coCustomActive').style.display = 'block';
-    setTimeout(function(){ document.getElementById('coCustomInput').focus(); }, 50);
+    setTimeout(() => document.getElementById('coCustomInput').focus(), 50);
   }
-
   function coCustomPreview(val) {
     var mins = parseInt(val) || 0;
     var n = new Date(); n.setMinutes(n.getMinutes() - mins);
@@ -1491,28 +925,24 @@
   async function doCheckout(type) {
     document.getElementById('checkoutModal').classList.remove('open');
     document.getElementById('diffDayModal').classList.remove('open');
-    const checkoutTime = getTimeWithOffset(pendingCheckoutOffset);
-    let morningCheckin = null;
+    const t = getTimeWithOffset(pendingCheckoutOffset);
+    let mc = null;
     if (type === 'different') {
-      morningCheckin = document.getElementById('morningCheckinInput').value;
-      if (!morningCheckin) { showToast('❌ Morning time daalo'); return; }
+      mc = document.getElementById('morningCheckinInput').value;
+      if (!mc) { showToast('❌ Morning time daalo'); return; }
     }
     try {
       const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          date: getToday(), checkout_time: checkoutTime,
-          is_different_day: type === 'different',
-          morning_checkin: morningCheckin, salary: getSalary()
-        })
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: getToday(), checkout_time: t,
+          is_different_day: type === 'different', morning_checkin: mc, salary: getSalary() })
       });
-      const data = await res.json();
-      if (data.success) {
-        renderHomeStatus(data.record);
+      const d = await res.json();
+      if (d.success) {
+        renderHomeStatus(d.record);
         document.getElementById('notesInput').value = '';
-        showToast('🎉 Checkout: ' + checkoutTime + '  |  OT: ₹' + (data.record.total_ot||0).toFixed(0));
-      } else { showToast('❌ ' + (data.error || 'Error')); }
+        showToast('🎉 Checkout: ' + t + '  |  OT: ₹' + (d.record.total_ot||0).toFixed(0));
+      } else { showToast('❌ ' + (d.error || 'Error')); }
     } catch(e) { showToast('❌ Network error'); }
   }
 
@@ -1523,10 +953,8 @@
     if (dashMonth < 0)  { dashMonth = 11; dashYear--; }
     loadDashboard();
   }
-
   async function loadDashboard() {
     document.getElementById('monthLabel').textContent = MONTHS[dashMonth] + ' ' + dashYear;
-
     try {
       const res  = await fetch('/api/dashboard?month=' + (dashMonth+1) + '&year=' + dashYear);
       const data = await res.json();
@@ -1539,86 +967,6 @@
     }
   }
 
-  // function renderSummary(data) {
-  //   const salary     = getSalary();
-  //   const days       = new Date(dashYear, dashMonth + 1, 0).getDate();
-  //   const perDay     = salary / days;
-  //   const leaveCount = days === 31 ? 3 : 2;
-  //   const leavePay   = parseFloat((perDay * leaveCount).toFixed(2));
-  //   const mobile     = 200;
-  //   const totalOT    = data.total_ot   || 0;
-  //   const totalFood  = data.total_food || 0;
-  //   const totalPayout = parseFloat((totalOT + mobile + leavePay).toFixed(2));
-
-  //   document.getElementById('summaryGrid').innerHTML = `
-  //     <div class="summary-tile">
-  //       <span class="tile-icon">⏱</span>
-  //       <div class="tile-val">₹${totalOT.toFixed(0)}</div>
-  //       <div class="tile-label">OT + Food Total</div>
-  //     </div>
-  //     <div class="summary-tile">
-  //       <span class="tile-icon">📅</span>
-  //       <div class="tile-val green">${data.days_worked || 0}</div>
-  //       <div class="tile-label">Days Worked</div>
-  //     </div>
-  //     <div class="summary-tile">
-  //       <span class="tile-icon">💪</span>
-  //       <div class="tile-val green">₹${(totalOT - totalFood).toFixed(0)}</div>
-  //       <div class="tile-label">Overtime Only</div>
-  //     </div>
-  //     <div class="summary-tile">
-  //       <span class="tile-icon">🍱</span>
-  //       <div class="tile-val">₹${totalFood.toFixed(0)}</div>
-  //       <div class="tile-label">Food Charges</div>
-  //     </div>
-  //     <div class="summary-tile">
-  //       <span class="tile-icon">🌙</span>
-  //       <div class="tile-val">${data.days_fullday || 0}</div>
-  //       <div class="tile-label">Full Day OT Days</div>
-  //     </div>
-  //     <div class="summary-tile">
-  //       <span class="tile-icon">🍱</span>
-  //       <div class="tile-val green">${data.food_days || 0}</div>
-  //       <div class="tile-label">Food Days</div>
-  //     </div>
-  //     <div class="summary-tile">
-  //       <span class="tile-icon">📱</span>
-  //       <div class="tile-val blue">₹${mobile}</div>
-  //       <div class="tile-label">Mobile Recharge</div>
-  //     </div>
-  //     <div class="summary-tile">
-  //       <span class="tile-icon">🏖️</span>
-  //       <div class="tile-val purple">₹${leavePay.toFixed(0)}</div>
-  //       <div class="tile-label">Leave (${leaveCount} days)</div>
-  //     </div>
-  //   `;
-
-  //   document.getElementById('payoutCard').innerHTML = `
-  //     <div class="payout-heading">Is Mahine ka Total</div>
-  //     <div class="payout-total">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</div>
-  //     <div class="payout-divider"></div>
-  //     <div class="payout-row">
-  //       <span class="payout-label">⏱ Only Overtime</span>
-  //       <span class="payout-val">₹${(totalOT - totalFood).toFixed(0)}</span>
-  //     </div>
-  //     <div class="payout-row">
-  //       <span class="payout-label">🍱 Food Charges <span style="font-size:11px;color:var(--text3)">(${data.food_days || 0} days)</span></span>
-  //       <span class="payout-val">₹${totalFood.toFixed(0)}</span>
-  //     </div>
-  //     <div class="payout-row">
-  //       <span class="payout-label">📱 Mobile Recharge</span>
-  //       <span class="payout-val">₹${mobile}</span>
-  //     </div>
-  //     <div class="payout-row">
-  //       <span class="payout-label">🏖️ Leave Payout <span style="font-size:11px;color:var(--text3)">(${leaveCount} × ₹${perDay.toFixed(0)})</span></span>
-  //       <span class="payout-val">₹${leavePay.toFixed(0)}</span>
-  //     </div>
-  //     <div class="payout-row total-row">
-  //       <span style="font-size:15px;font-weight:700;color:var(--text);">💰 Total Payout</span>
-  //       <span class="payout-val highlight">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</span>
-  //     </div>
-  //   `;
-  // }
   function renderSummary(data) {
     const salary     = getSalary();
     const days       = new Date(dashYear, dashMonth + 1, 0).getDate();
@@ -1626,83 +974,83 @@
     const leaveCount = days === 31 ? 3 : 2;
     const leavePay   = parseFloat((perDay * leaveCount).toFixed(2));
     const mobile     = 200;
-    const totalOT    = data.total_ot   || 0;
-    const totalFood  = data.total_food || 0;
+    const totalOT    = data.total_ot    || 0;
+    const totalFood  = data.total_food  || 0;
     const sundayAmt  = data.total_sunday || 0;
     const sundayDays = data.sunday_days  || 0;
-    const onlyOT     = totalOT - totalFood - sundayAmt; // sirf evening/morning OT
+    const onlyOT     = totalOT - totalFood - sundayAmt;
     const totalPayout = parseFloat((totalOT + mobile + leavePay).toFixed(2));
 
     document.getElementById('summaryGrid').innerHTML = `
-      <div class="tile t-teal">
-        <span class="tile-emoji">💪</span>
-        <div class="tile-val teal">₹${onlyOT.toFixed(0)}</div>
+      <div class="summary-tile">
+        <span class="tile-icon">💪</span>
+        <div class="tile-val green">₹${onlyOT.toFixed(0)}</div>
         <div class="tile-label">Only Overtime</div>
       </div>
-      <div class="tile t-green">
-        <span class="tile-emoji">📅</span>
+      <div class="summary-tile">
+        <span class="tile-icon">📅</span>
         <div class="tile-val green">${data.days_worked || 0}</div>
         <div class="tile-label">Days Worked</div>
       </div>
-      <div class="tile t-orange">
-        <span class="tile-emoji">🍱</span>
-        <div class="tile-val orange">₹${totalFood.toFixed(0)}</div>
+      <div class="summary-tile">
+        <span class="tile-icon">🍱</span>
+        <div class="tile-val">₹${totalFood.toFixed(0)}</div>
         <div class="tile-label">Food Charges</div>
       </div>
-      <div class="tile t-pink">
-        <span class="tile-emoji">🍱</span>
-        <div class="tile-val pink">${data.food_days || 0}</div>
+      <div class="summary-tile">
+        <span class="tile-icon">🍱</span>
+        <div class="tile-val purple">${data.food_days || 0}</div>
         <div class="tile-label">Food Days</div>
       </div>
-      <div class="tile t-blue">
-        <span class="tile-emoji">🌙</span>
+      <div class="summary-tile">
+        <span class="tile-icon">🌙</span>
         <div class="tile-val blue">${data.days_fullday || 0}</div>
         <div class="tile-label">Full Day OT</div>
       </div>
-      <div class="tile t-gold">
-        <span class="tile-emoji">☀️</span>
-        <div class="tile-val gold">${sundayDays}</div>
+      <div class="summary-tile">
+        <span class="tile-icon">☀️</span>
+        <div class="tile-val">${sundayDays}</div>
         <div class="tile-label">Sunday Days</div>
       </div>
-      <div class="tile t-blue">
-        <span class="tile-emoji">📱</span>
+      <div class="summary-tile">
+        <span class="tile-icon">📱</span>
         <div class="tile-val blue">₹${mobile}</div>
         <div class="tile-label">Mobile Recharge</div>
       </div>
-      <div class="tile t-purple">
-        <span class="tile-emoji">🏖️</span>
+      <div class="summary-tile">
+        <span class="tile-icon">🏖️</span>
         <div class="tile-val purple">₹${leavePay.toFixed(0)}</div>
         <div class="tile-label">Leave (${leaveCount} days)</div>
       </div>
     `;
 
     document.getElementById('payoutCard').innerHTML = `
-      <div class="payout-header">Is Mahine ka Total Payout</div>
-      <div class="payout-amount">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</div>
+      <div class="payout-heading">Is Mahine ka Total</div>
+      <div class="payout-total">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</div>
       <div class="payout-divider"></div>
       <div class="payout-row">
-        <span class="p-label">💪 Only Overtime</span>
-        <span class="p-val">₹${onlyOT.toFixed(0)}</span>
+        <span class="payout-label">💪 Only Overtime</span>
+        <span class="payout-val">₹${onlyOT.toFixed(0)}</span>
       </div>
       <div class="payout-row">
-        <span class="p-label">☀️ Sunday OT <small>(${sundayDays} days)</small></span>
-        <span class="p-val">₹${sundayAmt.toFixed(0)}</span>
+        <span class="payout-label">☀️ Sunday OT <span style="font-size:11px;color:var(--text3)">(${sundayDays} days)</span></span>
+        <span class="payout-val">₹${sundayAmt.toFixed(0)}</span>
       </div>
       <div class="payout-row">
-        <span class="p-label">🍱 Food Charges <small>(${data.food_days || 0} days)</small></span>
-        <span class="p-val">₹${totalFood.toFixed(0)}</span>
+        <span class="payout-label">🍱 Food Charges <span style="font-size:11px;color:var(--text3)">(${data.food_days || 0} days)</span></span>
+        <span class="payout-val">₹${totalFood.toFixed(0)}</span>
       </div>
       <div class="payout-row">
-        <span class="p-label">📱 Mobile Recharge</span>
-        <span class="p-val">₹${mobile}</span>
+        <span class="payout-label">📱 Mobile Recharge</span>
+        <span class="payout-val">₹${mobile}</span>
       </div>
       <div class="payout-row">
-        <span class="p-label">🏖️ Leave <small>(${leaveCount} × ₹${perDay.toFixed(0)})</small></span>
-        <span class="p-val">₹${leavePay.toFixed(0)}</span>
+        <span class="payout-label">🏖️ Leave <span style="font-size:11px;color:var(--text3)">(${leaveCount} × ₹${perDay.toFixed(0)})</span></span>
+        <span class="payout-val">₹${leavePay.toFixed(0)}</span>
       </div>
-      <div class="payout-row final">
-        <span class="p-label" style="color:var(--text);font-size:15px;font-weight:900;">💰 Total Payout</span>
-        <span class="p-val final-val">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</span>
+      <div class="payout-row total-row">
+        <span style="font-size:15px;font-weight:700;color:var(--text);">💰 Total Payout</span>
+        <span class="payout-val highlight">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</span>
       </div>
     `;
   }
@@ -1740,7 +1088,7 @@
     }).join('');
   }
 
-  // Close modal on outside (overlay) click
+  // Close modal on outside click
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', function(e) {
       if (e.target === this) this.classList.remove('open');
