@@ -258,10 +258,7 @@
       </div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-label">Notes</div>
-    <textarea class="notes-input" id="notesInput" rows="3" placeholder="Kuch note karna hai? (optional)"></textarea>
-  </div>
+  <!-- Notes card removed — use Misc tab instead -->
 </div>
 
 <!-- DASHBOARD -->
@@ -289,6 +286,30 @@
 
 <!-- SETTINGS -->
 <div class="screen" id="screen-settings">
+  <div class="card">
+    <div class="card-label">🔊 Sound Settings</div>
+    <div class="toggle-row" style="margin-bottom:14px;">
+      <div>
+        <div class="toggle-label">🔔 Entry Sound</div>
+        <div class="toggle-sub">Check-in / Check-out pe awaaz</div>
+      </div>
+      <div>
+        <input type="checkbox" class="toggle-input" id="soundEntryToggle" onchange="saveSoundSetting('entry', this.checked)" />
+        <label class="toggle-slider" for="soundEntryToggle"></label>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">🔈 Navigation Sound</div>
+        <div class="toggle-sub">Screen switch pe awaaz</div>
+      </div>
+      <div>
+        <input type="checkbox" class="toggle-input" id="soundNavToggle" onchange="saveSoundSetting('nav', this.checked)" />
+        <label class="toggle-slider" for="soundNavToggle"></label>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-label">Salary Settings</div>
     <div class="input-group">
@@ -553,7 +574,7 @@
       if (name === 'dashboard') loadDashboard();
       if (name === 'misc') renderMiscList();
       setTimeout(() => loader.classList.remove('show'), 180);
-      setTimeout(() => speak(SCREEN_VOICE[name] || ''), 400);
+      setTimeout(() => speak(SCREEN_VOICE[name] || '', 'nav'), 400);
     }, 300);
   }
 
@@ -568,6 +589,14 @@
     document.getElementById('salaryInput').type = 'password';
     salaryVisible = false;
     document.getElementById('eyeBtn').textContent = '👁️';
+    // Sound toggles — default ON
+    document.getElementById('soundEntryToggle').checked = localStorage.getItem('sound_entry') !== 'off';
+    document.getElementById('soundNavToggle').checked   = localStorage.getItem('sound_nav')   !== 'off';
+  }
+
+  function saveSoundSetting(type, isOn) {
+    localStorage.setItem('sound_' + type, isOn ? 'on' : 'off');
+    speak(isOn ? 'Sound on.' : 'Sound off.', type === 'entry' ? 'entry' : 'nav');
   }
   function toggleSalaryVisibility() {
     if (!salaryVisible) { openEmployeeKeyModal('show'); }
@@ -686,7 +715,7 @@
           notes: document.getElementById('notesInput').value.trim(), salary: getSalary() })
       });
       const d = await res.json();
-      if (d.success) { renderHomeStatus(d.record); setTimeout(() => speak('Jai Ganesh! Check in ho gaya.'), 300); showToast('✅ Check-in: ' + t); }
+      if (d.success) { renderHomeStatus(d.record); setTimeout(() => speak('Jai Ganesh! Check in ho gaya.', 'entry'), 300); showToast('✅ Check-in: ' + t); }
       else { showToast('❌ ' + (d.error || 'Error')); document.getElementById('btnCheckin').disabled = false; }
     } catch(e) { showToast('❌ Network error'); document.getElementById('btnCheckin').disabled = false; }
   }
@@ -739,7 +768,7 @@
       if (d.success) {
         renderHomeStatus(d.record);
         document.getElementById('notesInput').value = '';
-        setTimeout(() => speak('Aaj ka kaam khatam! Check out ho gaya. Jai Shri Ram!'), 400);
+        setTimeout(() => speak('Aaj ka kaam khatam! Check out ho gaya. Jai Shri Ram!', 'entry'), 400);
         showToast('🎉 Checkout: ' + t + '  |  OT: ₹' + (d.record.total_ot||0).toFixed(0));
       } else { showToast('❌ ' + (d.error || 'Error')); }
     } catch(e) { showToast('❌ Network error'); }
@@ -940,8 +969,11 @@
     });
   });
 
-  function speak(text) {
+  function speak(text, type) {
+    // type: 'entry' for checkin/checkout, 'nav' for screen switch
     try {
+      if (type === 'entry' && localStorage.getItem('sound_entry') === 'off') return;
+      if (type === 'nav'   && localStorage.getItem('sound_nav')   === 'off') return;
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'hi-IN';
       u.rate = 0.9;
