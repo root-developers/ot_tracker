@@ -767,7 +767,7 @@
       const d = await res.json();
       if (d.success) {
         renderHomeStatus(d.record);
-        document.getElementById('notesInput').value = '';
+        // notesInput removed from home screen
         setTimeout(() => speak('Aaj ka kaam khatam! Check out ho gaya. Jai Shri Ram!', 'entry'), 400);
         showToast('🎉 Checkout: ' + t + '  |  OT: ₹' + (d.record.total_ot||0).toFixed(0));
       } else { showToast('❌ ' + (d.error || 'Error')); }
