@@ -534,6 +534,13 @@
   fetchTodayStatus();
 
   // ── NAV ──
+  var SCREEN_VOICE = {
+    home:      'Home screen. Aaj ka check in ya check out karo.',
+    dashboard: 'Dashboard. Is mahine ki poori detail yahan hai.',
+    misc:      'Miscellaneous entries. Naya entry add kar sakte ho.',
+    settings:  'Settings. Salary aur rules yahan change karo.'
+  };
+
   function switchScreen(name) {
     var loader = document.getElementById('screenLoader');
     document.getElementById('loaderText').textContent = name.charAt(0).toUpperCase() + name.slice(1) + ' khul raha hai...';
@@ -546,6 +553,7 @@
       if (name === 'dashboard') loadDashboard();
       if (name === 'misc') renderMiscList();
       setTimeout(() => loader.classList.remove('show'), 180);
+      setTimeout(() => speak(SCREEN_VOICE[name] || ''), 400);
     }, 300);
   }
 
@@ -678,7 +686,7 @@
           notes: document.getElementById('notesInput').value.trim(), salary: getSalary() })
       });
       const d = await res.json();
-      if (d.success) { renderHomeStatus(d.record); speak('Jai Ganesh! Check in ho gaya.'); showToast('✅ Check-in: ' + t); }
+      if (d.success) { renderHomeStatus(d.record); setTimeout(() => speak('Jai Ganesh! Check in ho gaya.'), 300); showToast('✅ Check-in: ' + t); }
       else { showToast('❌ ' + (d.error || 'Error')); document.getElementById('btnCheckin').disabled = false; }
     } catch(e) { showToast('❌ Network error'); document.getElementById('btnCheckin').disabled = false; }
   }
@@ -731,7 +739,7 @@
       if (d.success) {
         renderHomeStatus(d.record);
         document.getElementById('notesInput').value = '';
-        speak('Aaj ka kaam khatam! Check out ho gaya. Jai Shri Ram!');
+        setTimeout(() => speak('Aaj ka kaam khatam! Check out ho gaya. Jai Shri Ram!'), 400);
         showToast('🎉 Checkout: ' + t + '  |  OT: ₹' + (d.record.total_ot||0).toFixed(0));
       } else { showToast('❌ ' + (d.error || 'Error')); }
     } catch(e) { showToast('❌ Network error'); }
