@@ -258,7 +258,10 @@
       </div>
     </div>
   </div>
-  <!-- Notes card removed — use Misc tab instead -->
+  <div class="card">
+    <div class="card-label">Notes</div>
+    <textarea class="notes-input" id="notesInput" rows="3" placeholder="Kuch note karna hai? (optional)"></textarea>
+  </div>
 </div>
 
 <!-- DASHBOARD -->
@@ -767,7 +770,7 @@
       const d = await res.json();
       if (d.success) {
         renderHomeStatus(d.record);
-        // notesInput removed from home screen
+        document.getElementById('notesInput').value = '';
         setTimeout(() => speak('Aaj ka kaam khatam! Check out ho gaya. Jai Shri Ram!', 'entry'), 400);
         showToast('🎉 Checkout: ' + t + '  |  OT: ₹' + (d.record.total_ot||0).toFixed(0));
       } else { showToast('❌ ' + (d.error || 'Error')); }
