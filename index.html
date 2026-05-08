@@ -337,7 +337,7 @@
     <span class="nav-icon">📊</span>Dashboard
   </button>
   <button class="nav-btn" id="nav-misc" onclick="switchScreen('misc')">
-    <span class="nav-icon">📋</span>Notes
+    <span class="nav-icon">📋</span>Misc
   </button>
   <button class="nav-btn" id="nav-settings" onclick="switchScreen('settings')">
     <span class="nav-icon">⚙️</span>Settings
@@ -678,7 +678,7 @@
           notes: document.getElementById('notesInput').value.trim(), salary: getSalary() })
       });
       const d = await res.json();
-      if (d.success) { renderHomeStatus(d.record); showToast('✅ Check-in: ' + t); }
+      if (d.success) { renderHomeStatus(d.record); speak('Jai Ganesh! Check in ho gaya.'); showToast('✅ Check-in: ' + t); }
       else { showToast('❌ ' + (d.error || 'Error')); document.getElementById('btnCheckin').disabled = false; }
     } catch(e) { showToast('❌ Network error'); document.getElementById('btnCheckin').disabled = false; }
   }
@@ -731,6 +731,7 @@
       if (d.success) {
         renderHomeStatus(d.record);
         document.getElementById('notesInput').value = '';
+        speak('Aaj ka kaam khatam! Check out ho gaya. Jai Shri Ram!');
         showToast('🎉 Checkout: ' + t + '  |  OT: ₹' + (d.record.total_ot||0).toFixed(0));
       } else { showToast('❌ ' + (d.error || 'Error')); }
     } catch(e) { showToast('❌ Network error'); }
@@ -822,25 +823,17 @@
     }).join('');
   }
 
-  // ══════════════════════════════════════════════
-  // ── MISC — Fully isolated, localStorage only ──
-  // ══════════════════════════════════════════════
-  var miscEntries = [];
-  var miscEditId  = null;
-
-  function loadMisc() {
-    try { miscEntries = JSON.parse(localStorage.getItem('misc_entries') || '[]'); } catch(e) { miscEntries = []; }
-  }
-  function saveMisc() {
-    localStorage.setItem('misc_entries', JSON.stringify(miscEntries));
-  }
+  // ══════════════════════════════════
+  // ── MISC — API backed ──
+  // ══════════════════════════════════
+  var miscEditId = null;
+  var miscEntriesCache = [];
 
   function openMiscModal(editId) {
-    loadMisc();
     miscEditId = editId || null;
     document.getElementById('miscModalTitle').textContent = editId ? '✏️ Entry Edit Karo' : '📋 Naya Entry';
     if (editId) {
-      const entry = miscEntries.find(e => e.id === editId);
+      const entry = miscEntriesCache.find(function(e){ return e._id.toString() === editId; });
       if (entry) {
         document.getElementById('miscName').value = entry.name;
         document.getElementById('miscDate').value = entry.date;
@@ -852,7 +845,7 @@
       document.getElementById('miscNote').value = '';
     }
     document.getElementById('miscModal').classList.add('open');
-    setTimeout(() => document.getElementById('miscName').focus(), 300);
+    setTimeout(function(){ document.getElementById('miscName').focus(); }, 300);
   }
 
   function closeMiscModal() {
@@ -860,60 +853,72 @@
     miscEditId = null;
   }
 
-  function saveMiscEntry() {
+  async function saveMiscEntry() {
     const name = document.getElementById('miscName').value.trim();
     const date = document.getElementById('miscDate').value;
     const note = document.getElementById('miscNote').value.trim();
     if (!name) { showToast('❌ Naam daalo'); return; }
     if (!date) { showToast('❌ Date select karo'); return; }
-    loadMisc();
-    if (miscEditId) {
-      const idx = miscEntries.findIndex(e => e.id === miscEditId);
-      if (idx !== -1) { miscEntries[idx] = { ...miscEntries[idx], name, date, note }; }
-      showToast('✅ Entry updated!');
-    } else {
-      miscEntries.unshift({ id: Date.now().toString(), name, date, note, created: new Date().toISOString() });
-      showToast('✅ Entry saved!');
-    }
-    saveMisc();
-    closeMiscModal();
-    renderMiscList();
+    try {
+      const method = miscEditId ? 'PUT' : 'POST';
+      const body   = miscEditId ? { id: miscEditId, name, date, note } : { name, date, note };
+      const res = await fetch('/api/misc', {
+        method, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const d = await res.json();
+      if (d.success || d.entry) {
+        showToast(miscEditId ? '✅ Entry updated!' : '✅ Entry saved!');
+        closeMiscModal();
+        renderMiscList();
+      } else { showToast('❌ ' + (d.error || 'Error')); }
+    } catch(e) { showToast('❌ Network error'); }
   }
 
-  function deleteMiscEntry(id) {
-    loadMisc();
-    miscEntries = miscEntries.filter(e => e.id !== id);
-    saveMisc();
-    renderMiscList();
-    showToast('🗑️ Entry deleted');
+  async function deleteMiscEntry(id) {
+    try {
+      const res = await fetch('/api/misc', {
+        method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      const d = await res.json();
+      if (d.success) { showToast('🗑️ Entry deleted'); renderMiscList(); }
+      else { showToast('❌ ' + (d.error || 'Error')); }
+    } catch(e) { showToast('❌ Network error'); }
   }
 
-  function renderMiscList() {
-    loadMisc();
+  async function renderMiscList() {
     const list = document.getElementById('miscList');
-    if (!miscEntries.length) {
-      list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Koi entry nahi — upar se add karo!</div></div>';
-      return;
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon" style="opacity:1;font-size:28px;">⏳</div><div class="empty-text">Loading...</div></div>';
+    try {
+      const res = await fetch('/api/misc');
+      const d   = await res.json();
+      miscEntriesCache = d.entries || [];
+      if (!miscEntriesCache.length) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Koi entry nahi — upar se add karo!</div></div>';
+        return;
+      }
+      list.innerHTML = miscEntriesCache.map(function(e) {
+        const dt = new Date(e.date + 'T00:00:00');
+        const dateStr = dt.getDate() + ' ' + MONTHS[dt.getMonth()].slice(0,3) + ' ' + dt.getFullYear();
+        const id = e._id.toString();
+        return '<div class="misc-item">' +
+          '<div class="misc-item-top">' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div class="misc-item-name">' + escHtml(e.name) + '</div>' +
+              '<div class="misc-item-date">📅 ' + dateStr + '</div>' +
+            '</div>' +
+            '<div class="misc-actions">' +
+              '<button class="misc-btn" onclick="openMiscModal(\'' + id + '\')" title="Edit">✏️</button>' +
+              '<button class="misc-btn del" onclick="deleteMiscEntry(\'' + id + '\')" title="Delete">🗑️</button>' +
+            '</div>' +
+          '</div>' +
+          (e.note ? '<div class="misc-item-note">💬 ' + escHtml(e.note) + '</div>' : '') +
+        '</div>';
+      }).join('');
+    } catch(err) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">Load nahi ho paya</div></div>';
     }
-    // Sort by date desc
-    const sorted = [...miscEntries].sort((a,b) => b.date.localeCompare(a.date));
-    list.innerHTML = sorted.map(e => {
-      const d = new Date(e.date + 'T00:00:00');
-      const dateStr = d.getDate() + ' ' + MONTHS[d.getMonth()].slice(0,3) + ' ' + d.getFullYear();
-      return `<div class="misc-item">
-        <div class="misc-item-top">
-          <div style="flex:1;min-width:0;">
-            <div class="misc-item-name">${escHtml(e.name)}</div>
-            <div class="misc-item-date">📅 ${dateStr}</div>
-          </div>
-          <div class="misc-actions">
-            <button class="misc-btn" onclick="openMiscModal('${e.id}')" title="Edit">✏️</button>
-            <button class="misc-btn del" onclick="deleteMiscEntry('${e.id}')" title="Delete">🗑️</button>
-          </div>
-        </div>
-        ${e.note ? `<div class="misc-item-note">💬 ${escHtml(e.note)}</div>` : ''}
-      </div>`;
-    }).join('');
   }
 
   function escHtml(str) {
@@ -926,6 +931,17 @@
       if (e.target === this) { this.classList.remove('open'); miscEditId = null; }
     });
   });
+
+  function speak(text) {
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'hi-IN';
+      u.rate = 0.9;
+      u.pitch = 1.1;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    } catch(e) {}
+  }
 
   function showToast(msg) {
     const t = document.getElementById('toast');
