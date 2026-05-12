@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>OT Tracker</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#080c14" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080c14; --bg2: #0d1220;
+      --card: #111827; --card2: #161d2e; --card3: #1c2540;
+      --accent: #3b82f6; --gold: #f59e0b;
+      --green: #10b981; --red: #ef4444; --purple: #a78bfa;
+      --text: #f1f5f9; --text2: #94a3b8; --text3: #475569;
+      --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.1);
+      --radius: 20px; --radius-sm: 12px; --radius-xs: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; max-width: 430px; margin: 0 auto; padding-bottom: 90px; position: relative; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; opacity: 0.4; }
+
+    /* HEADER */
+    .header { background: rgba(8,12,20,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 18px 20px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .header-brand { display: flex; align-items: center; gap: 10px; }
+    .header-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 14px rgba(59,130,246,0.35); }
+    .header-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+    .header-date { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 1px; font-family: 'Space Mono', monospace; }
+
+    /* BOTTOM NAV */
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: rgba(8,12,20,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; z-index: 200; padding: 4px 8px 8px; }
+    .nav-btn { flex: 1; padding: 10px 0 8px; background: none; border: none; color: var(--text3); font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all 0.2s; border-radius: 10px; letter-spacing: 0.02em; text-transform: uppercase; }
+    .nav-icon { font-size: 20px; line-height: 1; }
+    .nav-btn.active { color: var(--accent); background: rgba(59,130,246,0.08); }
+
+    /* SCREENS */
+    .screen { display: none; padding: 16px; position: relative; z-index: 1; }
+    .screen.active { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* CARDS */
+    .card { background: var(--card); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); }
+    .card-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+    .card-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* STATUS */
+    .status-hero { text-align: center; padding: 10px 0 6px; margin-bottom: 20px; }
+    .status-indicator { display: inline-flex; align-items: center; gap: 8px; background: var(--card2); border: 1px solid var(--border); border-radius: 30px; padding: 7px 16px; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 16px; transition: all 0.3s; }
+    .status-indicator.status-in { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); color: var(--green); }
+    .status-indicator.status-done { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.2); color: var(--accent); }
+    .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+    .pulse.green { background: var(--green); box-shadow: 0 0 0 0 rgba(16,185,129,0.6); animation: pulse-anim 1.5s ease infinite; }
+    .pulse.blue { background: var(--accent); }
+    @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); } 70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+    .status-time-display { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text2); letter-spacing: 0.05em; }
+
+    /* BUTTONS */
+    .btn-main { width: 100%; padding: 17px; border-radius: var(--radius-sm); border: none; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s, opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 9px; margin-bottom: 10px; }
+    .btn-main:active { transform: scale(0.97); }
+    .btn-main:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+    .btn-main:last-child { margin-bottom: 0; }
+    .btn-checkin { background: var(--green); color: #052e16; box-shadow: 0 4px 20px rgba(16,185,129,0.3); }
+    .btn-checkout { background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%); color: #fff; box-shadow: 0 4px 20px rgba(59,130,246,0.3); }
+    .btn-secondary { width: 100%; padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border2); background: var(--card2); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; }
+
+    /* TOGGLE */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+    .toggle-label { font-size: 15px; font-weight: 600; }
+    .toggle-sub { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 2px; }
+    .toggle-input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-slider { display: block; width: 50px; height: 26px; background: var(--card3); border-radius: 13px; cursor: pointer; transition: background 0.25s; position: relative; border: 1px solid var(--border2); }
+    .toggle-slider::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--text3); transition: transform 0.25s, background 0.25s; }
+    .toggle-input:checked + .toggle-slider { background: rgba(245,158,11,0.2); border-color: rgba(245,158,11,0.3); }
+    .toggle-input:checked + .toggle-slider::after { transform: translateX(24px); background: var(--gold); box-shadow: 0 0 8px rgba(245,158,11,0.5); }
+
+    /* NOTES */
+    .notes-input { width: 100%; background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; resize: none; outline: none; transition: border-color 0.2s; line-height: 1.5; }
+    .notes-input:focus { border-color: rgba(59,130,246,0.3); }
+    .notes-input::placeholder { color: var(--text3); }
+
+    /* MODALS */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 500; align-items: flex-end; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: var(--card); border-radius: 24px 24px 0 0; padding: 12px 20px 48px; width: 100%; max-width: 430px; border-top: 1px solid var(--border2); animation: slideUp 0.28s cubic-bezier(0.22,1,0.36,1); }
+    .modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 8px auto 20px; }
+    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.2px; }
+    .modal-sub { font-size: 13px; color: var(--text2); font-weight: 500; margin-bottom: 20px; line-height: 1.4; }
+    .modal-options { display: flex; gap: 10px; }
+    .modal-opt { flex: 1; padding: 18px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--card2); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .modal-opt:active { transform: scale(0.97); background: var(--card3); }
+    .modal-opt .opt-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+
+    /* TIME OFFSET */
+    .cur-time { text-align: center; margin-bottom: 20px; background: var(--card2); border-radius: var(--radius-sm); padding: 16px 12px; border: 1px solid var(--border); }
+    .cur-label { font-size: 10px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+    .cur-val { font-family: 'Space Mono', monospace; font-size: 44px; font-weight: 700; color: var(--text); line-height: 1.2; letter-spacing: -1px; }
+    .cur-sub { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 2px; }
+    .time-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .time-opt { padding: 20px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--card2); cursor: pointer; text-align: center; transition: all 0.18s; }
+    .time-opt:active { border-color: var(--green); background: rgba(16,185,129,0.08); transform: scale(0.97); }
+    .time-opt.co:active { border-color: var(--accent); background: rgba(59,130,246,0.08); }
+    .opt-min { font-family: 'Space Mono', monospace; font-size: 30px; font-weight: 700; display: block; color: var(--green); line-height: 1; }
+    .opt-min.blue { color: var(--accent); }
+    .opt-lbl { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 6px; display: block; letter-spacing: 0.02em; }
+
+    /* DASHBOARD */
+    .month-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .month-nav { width: 38px; height: 38px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text2); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.18s; }
+    .month-label { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+
+    /* SUMMARY TILES */
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .summary-tile { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; position: relative; overflow: hidden; }
+    .tile-icon { font-size: 20px; margin-bottom: 8px; display: block; }
+    .tile-val { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: var(--gold); line-height: 1; letter-spacing: -0.5px; }
+    .tile-val.green { color: var(--green); }
+    .tile-val.blue  { color: var(--accent); }
+    .tile-val.purple { color: var(--purple); }
+    .tile-label { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 5px; }
+
+    /* PAYOUT CARD */
+    .payout-card { background: var(--card); border: 1px solid rgba(245,158,11,0.2); border-radius: var(--radius); padding: 22px 20px; margin-bottom: 14px; position: relative; overflow: hidden; }
+    .payout-card::before { content: ''; position: absolute; top: -60px; right: -60px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%); pointer-events: none; }
+    .payout-heading { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .payout-total { font-family: 'Space Mono', monospace; font-size: 40px; font-weight: 700; color: var(--gold); line-height: 1.1; margin-bottom: 20px; letter-spacing: -1px; }
+    .payout-divider { height: 1px; background: var(--border); margin: 0 0 14px; }
+    .payout-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+    .payout-row + .payout-row { border-top: 1px solid var(--border); }
+    .payout-row.total-row { padding-top: 14px; margin-top: 6px; border-top: 1px solid var(--border2) !important; }
+    .payout-label { font-size: 13px; font-weight: 500; color: var(--text2); }
+    .payout-val { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; color: var(--green); }
+    .payout-val.highlight { font-size: 18px; color: var(--gold); }
+
+    /* LOG */
+    .log-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; }
+    .log-date-box { background: var(--card2); border-radius: var(--radius-xs); padding: 8px 10px; text-align: center; flex-shrink: 0; min-width: 46px; border: 1px solid var(--border); }
+    .log-day { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; line-height: 1; color: var(--text); }
+    .log-mon { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+    .log-details { flex: 1; min-width: 0; }
+    .log-times { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text3); font-weight: 400; margin-bottom: 5px; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+    .log-ot { font-size: 16px; font-weight: 700; color: var(--green); letter-spacing: -0.2px; }
+    .log-ot.zero { color: var(--text3); }
+    .log-breakdown { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 4px; line-height: 1.4; }
+    .log-notes { font-size: 11px; color: rgba(245,158,11,0.8); font-weight: 500; margin-top: 4px; font-style: italic; }
+    .log-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .badge-sunday  { background: rgba(245,158,11,0.12); color: var(--gold); border: 1px solid rgba(245,158,11,0.2); }
+    .badge-fullday { background: rgba(59,130,246,0.12); color: var(--accent); border: 1px solid rgba(59,130,246,0.2); }
+
+    /* SETTINGS */
+    .input-group { margin-bottom: 14px; }
+    .input-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px; display: block; }
+    .input-field { width: 100%; background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 13px 14px; color: var(--text); font-family: 'Space Mono', monospace; font-size: 17px; font-weight: 700; outline: none; transition: border-color 0.2s; }
+    .input-field:focus { border-color: rgba(59,130,246,0.4); }
+    .save-btn { width: 100%; padding: 16px; border-radius: var(--radius-sm); border: none; background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 6px; box-shadow: 0 4px 20px rgba(59,130,246,0.25); transition: transform 0.1s; }
+    .save-btn:active { transform: scale(0.98); }
+    .rules-grid { display: flex; flex-direction: column; gap: 0; }
+    .rule-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .rule-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .rule-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .rule-text { font-size: 13px; color: var(--text2); font-weight: 500; line-height: 1.4; }
+    .rule-highlight { color: var(--text); font-weight: 600; }
+
+    /* SECTION LABEL */
+    .section-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .section-label::before { content: ''; width: 3px; height: 12px; background: var(--accent); border-radius: 2px; flex-shrink: 0; }
+
+    /* ─── MISC ─── */
+    .misc-add-btn {
+      width: 100%; padding: 15px; border-radius: var(--radius-sm);
+      border: 1.5px dashed var(--border2); background: transparent;
+      color: var(--accent); font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .misc-add-btn:active { background: rgba(59,130,246,0.06); border-color: var(--accent); }
+    .misc-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px;
+      margin-bottom: 8px;
+    }
+    .misc-item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .misc-item-name { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .misc-item-date { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text3); font-weight: 400; margin-top: 4px; }
+    .misc-item-note { font-size: 12px; color: var(--text2); font-weight: 500; margin-top: 8px; font-style: italic; line-height: 1.4; padding-top: 8px; border-top: 1px solid var(--border); }
+    .misc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .misc-btn {
+      width: 30px; height: 30px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--card2);
+      cursor: pointer; font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .misc-btn:active { transform: scale(0.92); }
+    .misc-btn.del:active { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 104px; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--card); border: 1px solid var(--border2); border-radius: 30px; padding: 11px 24px; font-size: 13px; font-weight: 600; color: var(--text); z-index: 999; opacity: 0; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; pointer-events: none; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* EMPTY */
+    .empty-state { text-align: center; padding: 50px 20px; color: var(--text3); }
+    .empty-icon { font-size: 42px; margin-bottom: 12px; opacity: 0.5; }
+    .empty-text { font-size: 14px; font-weight: 500; }
+
+    /* CHECKIN CARD */
+    .checkin-card { background: var(--card); border-radius: var(--radius); padding: 20px 18px; margin-bottom: 12px; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .checkin-card::after { content: ''; position: absolute; bottom: -30px; right: -30px; width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%); pointer-events: none; }
+
+    /* LOADER */
+    .screen-loader { position: fixed; inset: 0; background: var(--bg); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+    .screen-loader.show { opacity: 1; pointer-events: all; }
+    .loader-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: 13px; font-weight: 600; color: var(--text3); letter-spacing: 0.04em; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="header-icon">🕐</div>
+    <div>
+      <div class="header-title">OT Tracker</div>
+      <div class="header-date" id="headerDate"></div>
+    </div>
+  </div>
+  <div style="font-size:26px">👷</div>
+</div>
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <div class="checkin-card">
+    <div class="card-label">Today's Status</div>
+    <div class="status-hero">
+      <div class="status-indicator" id="statusIndicator">
+        <div class="pulse" id="statusDot"></div>
+        <span id="statusText">Check-in nahi hua</span>
+      </div>
+      <div class="status-time-display" id="statusTime"></div>
+    </div>
+    <button class="btn-main btn-checkin" id="btnCheckin" onclick="openCheckinModal()">✅&nbsp; Check In</button>
+    <button class="btn-main btn-checkout" id="btnCheckout" onclick="openCheckoutTimeModal()" disabled style="margin-bottom:0">🚪&nbsp; Check Out</button>
+  </div>
+  <div class="card">
+    <div class="card-label">Sunday Mode</div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">☀️ Aaj Sunday hai?</div>
+        <div class="toggle-sub">Full day overtime milega</div>
+      </div>
+      <div>
+        <input type="checkbox" class="toggle-input" id="sundayToggle" />
+        <label class="toggle-slider" for="sundayToggle"></label>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">Notes</div>
+    <textarea class="notes-input" id="notesInput" rows="3" placeholder="Kuch note karna hai? (optional)"></textarea>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="screen" id="screen-dashboard">
+  <div class="month-header">
+    <button class="month-nav" onclick="changeMonth(-1)">‹</button>
+    <div class="month-label" id="monthLabel"></div>
+    <button class="month-nav" onclick="changeMonth(1)">›</button>
+  </div>
+  <div class="section-label">Month Summary</div>
+  <div class="summary-grid" id="summaryGrid"></div>
+  <div class="section-label">Total Payout</div>
+  <div class="payout-card" id="payoutCard"></div>
+  <div class="section-label">Daily Log</div>
+  <div id="logList"></div>
+</div>
+
+<!-- MISC -->
+<div class="screen" id="screen-misc">
+  <button class="misc-add-btn" onclick="openMiscModal()">
+    ＋ Naya Entry Add Karo
+  </button>
+  <div id="miscList"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen" id="screen-settings">
+  <div class="card">
+    <div class="card-label">🔊 Sound Settings</div>
+    <div class="toggle-row" style="margin-bottom:14px;">
+      <div>
+        <div class="toggle-label">🔔 Entry Sound</div>
+        <div class="toggle-sub">Check-in / Check-out pe awaaz</div>
+      </div>
+      <div>
+        <input type="checkbox" class="toggle-input" id="soundEntryToggle" onchange="saveSoundSetting('entry', this.checked)" />
+        <label class="toggle-slider" for="soundEntryToggle"></label>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">🔈 Navigation Sound</div>
+        <div class="toggle-sub">Screen switch pe awaaz</div>
+      </div>
+      <div>
+        <input type="checkbox" class="toggle-input" id="soundNavToggle" onchange="saveSoundSetting('nav', this.checked)" />
+        <label class="toggle-slider" for="soundNavToggle"></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Salary Settings</div>
+    <div class="input-group">
+      <label class="input-label">Monthly Salary (₹)</label>
+      <div style="position:relative;">
+        <input type="password" class="input-field" id="salaryInput" placeholder="••••••" autocomplete="off" style="padding-right:52px;letter-spacing:0.2em;" />
+        <button onclick="toggleSalaryVisibility()" id="eyeBtn" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:var(--text3);">👁️</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="save-btn" onclick="openEmployeeKeyModal('save')" style="flex:1;margin-top:0;">💾 Save</button>
+      <button class="save-btn" onclick="openEmployeeKeyModal('show')" style="flex:1;margin-top:0;background:var(--card2);border:1px solid var(--border2);color:var(--text2);box-shadow:none;">👁 Show Salary</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">OT Rules</div>
+    <div id="rulesLocked" style="text-align:center;padding:18px 0 10px;">
+      <div style="font-size:32px;margin-bottom:10px;letter-spacing:6px;color:var(--text3);">••••••••</div>
+      <div style="font-size:12px;color:var(--text3);font-weight:600;margin-bottom:16px;">Rules dekhne ke liye key chahiye</div>
+      <button class="save-btn" onclick="openEmployeeKeyModal('rules')" style="max-width:200px;margin:0 auto;display:block;padding:12px 20px;font-size:14px;">🔐 Show Rules</button>
+    </div>
+    <div class="rules-grid" id="rulesGrid" style="display:none;">
+      <div class="rule-row"><span class="rule-icon">🕖</span><span class="rule-text">Normal shift: <span class="rule-highlight">9 AM – 7 PM</span></span></div>
+      <div class="rule-row"><span class="rule-icon">💵</span><span class="rule-text">OT rate: <span class="rule-highlight">₹80/hr</span> (after 7 PM)</span></div>
+      <div class="rule-row"><span class="rule-icon">🍱</span><span class="rule-text">Food: <span class="rule-highlight">₹150</span> (checkout after 10 PM)</span></div>
+      <div class="rule-row"><span class="rule-icon">🌙</span><span class="rule-text">After <span class="rule-highlight">11:50 PM</span>: Full day salary</span></div>
+      <div class="rule-row"><span class="rule-icon">🌅</span><span class="rule-text">Early checkin (&lt;7:55 AM): 8–9 AM OT + <span class="rule-highlight">₹150</span></span></div>
+      <div class="rule-row"><span class="rule-icon">☀️</span><span class="rule-text">Sunday ON: <span class="rule-highlight">Full day salary</span></span></div>
+      <div class="rule-row"><span class="rule-icon">⏱</span><span class="rule-text">Round: 30–44 min = 0.5 hr, <span class="rule-highlight">45+ min = 1 hr</span></span></div>
+      <div class="rule-row"><span class="rule-icon">📱</span><span class="rule-text">Mobile Recharge: <span class="rule-highlight">₹200</span> fixed/month</span></div>
+      <div class="rule-row"><span class="rule-icon">🏖️</span><span class="rule-text">Leave: <span class="rule-highlight">2 days</span> (30-day) / <span class="rule-highlight">3 days</span> (31-day)</span></div>
+      <div class="rule-row" style="border-top:1px solid var(--border2);margin-top:4px;padding-top:14px;">
+        <span class="rule-icon">🔒</span>
+        <button onclick="hideRules()" style="background:none;border:none;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;padding:0;">Hide Rules</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="switchScreen('home')">
+    <span class="nav-icon">🏠</span>Home
+  </button>
+  <button class="nav-btn" id="nav-dashboard" onclick="switchScreen('dashboard')">
+    <span class="nav-icon">📊</span>Dashboard
+  </button>
+  <button class="nav-btn" id="nav-misc" onclick="switchScreen('misc')">
+    <span class="nav-icon">📋</span>Misc
+  </button>
+  <button class="nav-btn" id="nav-settings" onclick="switchScreen('settings')">
+    <span class="nav-icon">⚙️</span>Settings
+  </button>
+</nav>
+
+<!-- ══ MODAL: Check-in offset ══ -->
+<div class="modal-overlay" id="checkinTimeModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🏠 Ghar se nikal rahe ho?</div>
+    <div class="modal-sub">Check-in time select karo</div>
+    <div class="cur-time">
+      <div class="cur-label">Abhi ka time</div>
+      <div class="cur-val" id="ciCurrentTime">--:--</div>
+      <div class="cur-sub" id="ciPreview">Check-in = current time</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div class="time-opt" onclick="doCheckin(30)"><span class="opt-min">+30</span><span class="opt-lbl">minute add</span></div>
+      <div class="time-opt" onclick="doCheckin(40)"><span class="opt-min">+40</span><span class="opt-lbl">minute add</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="time-opt" onclick="doCheckin(0)" style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:10px;padding:16px 12px;">
+        <span style="font-size:26px;line-height:1;">🕐</span>
+        <div style="text-align:left;">
+          <div style="font-size:15px;font-weight:800;color:var(--green);font-family:'Space Mono',monospace;line-height:1;">Now</div>
+          <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:3px;">Current time</div>
+        </div>
+      </div>
+      <div class="time-opt" id="ciCustomTile" style="padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;" onclick="activateCiCustom()">
+        <div id="ciCustomIdle" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <span style="font-size:22px;line-height:1;">✏️</span>
+          <span style="font-size:11px;color:var(--text3);font-weight:700;letter-spacing:0.04em;">Custom</span>
+        </div>
+        <div id="ciCustomActive" style="display:none;width:100%;text-align:center;">
+          <div style="font-size:10px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Minutes add</div>
+          <input type="number" id="ciCustomInput" min="0" max="120"
+            style="width:100%;font-family:'Space Mono',monospace;font-size:26px;font-weight:700;background:transparent;border:none;border-bottom:2px solid var(--green);color:var(--green);text-align:center;outline:none;padding-bottom:2px;" placeholder="0"
+            oninput="ciCustomPreview(this.value)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();doCheckin(parseInt(this.value)||0);}" />
+          <div style="font-size:10px;color:var(--text3);margin-top:6px;font-weight:600;">Enter dabao ✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Check-out offset ══ -->
+<div class="modal-overlay" id="checkoutTimeModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🏠 Ghar pohonch gaye?</div>
+    <div class="modal-sub">Checkout time select karo</div>
+    <div class="cur-time">
+      <div class="cur-label">Abhi ka time</div>
+      <div class="cur-val" id="coCurrentTime">--:--</div>
+      <div class="cur-sub" id="coPreview">Checkout = current time</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div class="time-opt co" onclick="selectCheckoutOffset(30)"><span class="opt-min blue">−30</span><span class="opt-lbl">minute minus</span></div>
+      <div class="time-opt co" onclick="selectCheckoutOffset(40)"><span class="opt-min blue">−40</span><span class="opt-lbl">minute minus</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="time-opt co" onclick="selectCheckoutOffset(0)" style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:10px;padding:16px 12px;">
+        <span style="font-size:26px;line-height:1;">🕐</span>
+        <div style="text-align:left;">
+          <div style="font-size:15px;font-weight:800;color:var(--accent);font-family:'Space Mono',monospace;line-height:1;">Now</div>
+          <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:3px;">Current time</div>
+        </div>
+      </div>
+      <div class="time-opt co" id="coCustomTile" style="padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;" onclick="activateCoCustom()">
+        <div id="coCustomIdle" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <span style="font-size:22px;line-height:1;">✏️</span>
+          <span style="font-size:11px;color:var(--text3);font-weight:700;letter-spacing:0.04em;">Custom</span>
+        </div>
+        <div id="coCustomActive" style="display:none;width:100%;text-align:center;">
+          <div style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Minutes minus</div>
+          <input type="number" id="coCustomInput" min="0" max="120"
+            style="width:100%;font-family:'Space Mono',monospace;font-size:26px;font-weight:700;background:transparent;border:none;border-bottom:2px solid var(--accent);color:var(--accent);text-align:center;outline:none;padding-bottom:2px;" placeholder="0"
+            oninput="coCustomPreview(this.value)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();selectCheckoutOffset(parseInt(this.value)||0);}" />
+          <div style="font-size:10px;color:var(--text3);margin-top:6px;font-weight:600;">Enter dabao ✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Same/Alag Din ══ -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Checkout Type 🤔</div>
+    <div class="modal-sub">Aaj check-in tha ya kal raat se continue hai?</div>
+    <div class="modal-options">
+      <div class="modal-opt" onclick="doCheckout('same')"><span class="opt-icon">📅</span>Same Din</div>
+      <div class="modal-opt" onclick="openDiffDayModal()"><span class="opt-icon">🌙</span>Alag Din<br><small style="font-weight:500;color:var(--text3);font-size:11px">Kal raat se</small></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Morning checkin ══ -->
+<div class="modal-overlay" id="diffDayModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Subah Check-in Time ⏰</div>
+    <div class="modal-sub">Aaj subah check-in kab hua tha?</div>
+    <div class="input-group" style="margin-bottom:16px">
+      <label class="input-label">Morning Check-in</label>
+      <input type="time" class="input-field" id="morningCheckinInput" />
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-secondary" onclick="document.getElementById('diffDayModal').classList.remove('open')" style="flex:1">Cancel</button>
+      <button class="btn-main btn-checkout" onclick="doCheckout('different')" style="flex:1;margin:0">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Employee Key ══ -->
+<div class="modal-overlay" id="employeeKeyModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="empModalTitle">🔐 Employee Key</div>
+    <div class="modal-sub" id="empModalSub">Apni employee key enter karo</div>
+    <div class="input-group" style="margin-bottom:16px;">
+      <label class="input-label">Employee Key</label>
+      <input type="password" class="input-field" id="employeeKeyInput" placeholder="••••••••••" autocomplete="off" onkeydown="if(event.key==='Enter') verifyEmployeeKey()" />
+    </div>
+    <div id="empKeyError" style="font-size:12px;color:var(--red);font-weight:600;margin-bottom:12px;display:none;">❌ Wrong key! Access denied.</div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-secondary" onclick="closeEmployeeKeyModal()" style="flex:1;">Cancel</button>
+      <button class="btn-main btn-checkout" onclick="verifyEmployeeKey()" style="flex:1;margin:0;">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Salary Reveal ══ -->
+<div class="modal-overlay" id="salaryRevealModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💰 Monthly Salary</div>
+    <div class="modal-sub">Current saved salary</div>
+    <div style="text-align:center;background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:24px 16px;margin-bottom:20px;">
+      <div style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Monthly Salary</div>
+      <div id="salaryRevealAmount" style="font-family:'Space Mono',monospace;font-size:38px;font-weight:700;color:var(--gold);letter-spacing:-1px;"></div>
+    </div>
+    <button class="save-btn" onclick="document.getElementById('salaryRevealModal').classList.remove('open')">Close</button>
+  </div>
+</div>
+
+<!-- ══ MODAL: Misc Add/Edit ══ -->
+<div class="modal-overlay" id="miscModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="miscModalTitle">📋 Naya Entry</div>
+    <div class="modal-sub">Entry ki details daalo</div>
+    <div class="input-group">
+      <label class="input-label">Naam / Kaam *</label>
+      <input type="text" class="input-field" id="miscName" placeholder="e.g. Cylinder, CC Bill..." style="font-family:'DM Sans',sans-serif;font-size:16px;" />
+    </div>
+    <div class="input-group">
+      <label class="input-label">Date *</label>
+      <input type="date" class="input-field" id="miscDate" style="font-family:'DM Sans',sans-serif;font-size:15px;" />
+    </div>
+    <div class="input-group" style="margin-bottom:20px;">
+      <label class="input-label">Notes (optional)</label>
+      <textarea class="notes-input" id="miscNote" rows="2" placeholder="Kuch aur add karna hai?"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-secondary" onclick="closeMiscModal()" style="flex:1;">Cancel</button>
+      <button class="btn-main btn-checkin" onclick="saveMiscEntry()" style="flex:1;margin:0;color:#052e16;">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen-loader" id="screenLoader">
+  <div class="loader-spinner"></div>
+  <div class="loader-text" id="loaderText">Loading...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let dashMonth = new Date().getMonth();
+  let dashYear  = new Date().getFullYear();
+  let pendingCheckoutOffset = 0;
+
+  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('en-IN', {
+    weekday:'short', day:'numeric', month:'short', year:'numeric'
+  }).toUpperCase();
+
+  loadSettings();
+  fetchTodayStatus();
+
+  // ── NAV ──
+  var SCREEN_VOICE = {
+    home:      'Home screen. Aaj ka check in ya check out karo.',
+    dashboard: 'Dashboard. Is mahine ki poori detail yahan hai.',
+    misc:      'Miscellaneous entries. Naya entry add kar sakte ho.',
+    settings:  'Settings. Salary aur rules yahan change karo.'
+  };
+
+  function switchScreen(name) {
+    var loader = document.getElementById('screenLoader');
+    document.getElementById('loaderText').textContent = name.charAt(0).toUpperCase() + name.slice(1) + ' khul raha hai...';
+    loader.classList.add('show');
+    setTimeout(function() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('screen-' + name).classList.add('active');
+      document.getElementById('nav-' + name).classList.add('active');
+      if (name === 'dashboard') loadDashboard();
+      if (name === 'misc') renderMiscList();
+      setTimeout(() => loader.classList.remove('show'), 180);
+      setTimeout(() => speak(SCREEN_VOICE[name] || '', 'nav'), 400);
+    }, 300);
+  }
+
+  // ── SETTINGS ──
+  const EMPLOYEE_KEY = 'Gangesh1972';
+  var empKeyAction = 'save';
+  var salaryVisible = false;
+
+  function loadSettings() {
+    const saved = localStorage.getItem('salary') || '28600';
+    document.getElementById('salaryInput').value = saved;
+    document.getElementById('salaryInput').type = 'password';
+    salaryVisible = false;
+    document.getElementById('eyeBtn').textContent = '👁️';
+    // Sound toggles — default ON
+    document.getElementById('soundEntryToggle').checked = localStorage.getItem('sound_entry') !== 'off';
+    document.getElementById('soundNavToggle').checked   = localStorage.getItem('sound_nav')   !== 'off';
+  }
+
+  function saveSoundSetting(type, isOn) {
+    localStorage.setItem('sound_' + type, isOn ? 'on' : 'off');
+    speak(isOn ? 'Sound on.' : 'Sound off.', type === 'entry' ? 'entry' : 'nav');
+  }
+  function toggleSalaryVisibility() {
+    if (!salaryVisible) { openEmployeeKeyModal('show'); }
+    else { document.getElementById('salaryInput').type = 'password'; salaryVisible = false; document.getElementById('eyeBtn').textContent = '👁️'; }
+  }
+  function openEmployeeKeyModal(action) {
+    empKeyAction = action;
+    document.getElementById('employeeKeyInput').value = '';
+    document.getElementById('empKeyError').style.display = 'none';
+    const titles = { save: ['🔐 Confirm Save', 'Salary save karne ke liye key daalo'], show: ['🔐 Employee Key', 'Salary dekhne ke liye key daalo'], rules: ['🔐 OT Rules', 'Rules dekhne ke liye key daalo'] };
+    document.getElementById('empModalTitle').textContent = titles[action][0];
+    document.getElementById('empModalSub').textContent   = titles[action][1];
+    document.getElementById('employeeKeyModal').classList.add('open');
+    setTimeout(() => document.getElementById('employeeKeyInput').focus(), 300);
+  }
+  function closeEmployeeKeyModal() {
+    document.getElementById('employeeKeyModal').classList.remove('open');
+    document.getElementById('employeeKeyInput').value = '';
+    document.getElementById('empKeyError').style.display = 'none';
+  }
+  function verifyEmployeeKey() {
+    const entered = document.getElementById('employeeKeyInput').value;
+    if (entered !== EMPLOYEE_KEY) { document.getElementById('empKeyError').style.display = 'block'; document.getElementById('employeeKeyInput').value = ''; return; }
+    closeEmployeeKeyModal();
+    if (empKeyAction === 'save') {
+      const sal = document.getElementById('salaryInput').value;
+      if (!sal || isNaN(sal)) { showToast('❌ Valid salary daalo'); return; }
+      localStorage.setItem('salary', sal);
+      document.getElementById('salaryInput').type = 'password';
+      salaryVisible = false;
+      showToast('✅ Salary saved!');
+    } else if (empKeyAction === 'show') {
+      const saved = localStorage.getItem('salary') || '28600';
+      document.getElementById('salaryRevealAmount').textContent = '₹' + parseFloat(saved).toLocaleString('en-IN');
+      document.getElementById('salaryRevealModal').classList.add('open');
+    } else if (empKeyAction === 'rules') {
+      document.getElementById('rulesLocked').style.display = 'none';
+      document.getElementById('rulesGrid').style.display = 'block';
+    }
+  }
+  function hideRules() { document.getElementById('rulesGrid').style.display = 'none'; document.getElementById('rulesLocked').style.display = 'block'; }
+  function getSalary() { return parseFloat(localStorage.getItem('salary') || '28600'); }
+
+  // ── TIME ──
+  function getToday() {
+    const n = new Date();
+    return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
+  }
+  function getTimeWithOffset(m) {
+    const n = new Date(); n.setMinutes(n.getMinutes() + m);
+    return String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+  }
+  function getNow() { return getTimeWithOffset(0); }
+
+  // ── STATUS ──
+  async function fetchTodayStatus() {
+    try {
+      const res = await fetch('/api/record?date=' + getToday());
+      const d   = await res.json();
+      renderHomeStatus(d.record || null);
+    } catch(e) { renderHomeStatus(null); }
+  }
+  function renderHomeStatus(rec) {
+    const ind  = document.getElementById('statusIndicator');
+    const dot  = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    const time = document.getElementById('statusTime');
+    const bi   = document.getElementById('btnCheckin');
+    const bo   = document.getElementById('btnCheckout');
+    if (!rec) {
+      ind.className = 'status-indicator'; dot.className = 'pulse';
+      text.textContent = 'Check-in nahi hua'; time.textContent = '';
+      bi.disabled = false; bo.disabled = true;
+    } else if (rec.checkin_time && !rec.checkout_time) {
+      ind.className = 'status-indicator status-in'; dot.className = 'pulse green';
+      text.textContent = 'Check-in ho gaya ✅'; time.textContent = rec.checkin_time;
+      bi.disabled = true; bo.disabled = false;
+    } else {
+      ind.className = 'status-indicator status-done'; dot.className = 'pulse blue';
+      text.textContent = 'Aaj ka kaam khatam 🎉';
+      time.textContent = rec.checkin_time + '  →  ' + rec.checkout_time;
+      bi.disabled = true; bo.disabled = true;
+    }
+  }
+
+  // ── CHECK-IN ──
+  function openCheckinModal() {
+    const now = getNow();
+    document.getElementById('ciCurrentTime').textContent = now;
+    document.getElementById('ciPreview').textContent = 'Check-in = ' + now + ' (current)';
+    document.getElementById('ciCustomIdle').style.display = 'flex';
+    document.getElementById('ciCustomActive').style.display = 'none';
+    document.getElementById('ciCustomInput').value = '';
+    document.getElementById('checkinTimeModal').classList.add('open');
+  }
+  function activateCiCustom() {
+    document.getElementById('ciCustomIdle').style.display = 'none';
+    document.getElementById('ciCustomActive').style.display = 'block';
+    setTimeout(() => document.getElementById('ciCustomInput').focus(), 50);
+  }
+  function ciCustomPreview(val) {
+    var mins = parseInt(val) || 0;
+    var n = new Date(); n.setMinutes(n.getMinutes() + mins);
+    var t = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+    document.getElementById('ciPreview').textContent = mins > 0 ? 'Check-in = ' + t + ' (+' + mins + ' min)' : 'Check-in = ' + getNow() + ' (current)';
+  }
+  async function doCheckin(addMins) {
+    document.getElementById('checkinTimeModal').classList.remove('open');
+    document.getElementById('btnCheckin').disabled = true;
+    const t = getTimeWithOffset(addMins);
+    try {
+      const res = await fetch('/api/checkin', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: getToday(), checkin_time: t,
+          is_sunday: document.getElementById('sundayToggle').checked,
+          notes: document.getElementById('notesInput').value.trim(), salary: getSalary() })
+      });
+      const d = await res.json();
+      if (d.success) { renderHomeStatus(d.record); setTimeout(() => speak('Jai Ganesh! Check in ho gaya.', 'entry'), 300); showToast('✅ Check-in: ' + t); }
+      else { showToast('❌ ' + (d.error || 'Error')); document.getElementById('btnCheckin').disabled = false; }
+    } catch(e) { showToast('❌ Network error'); document.getElementById('btnCheckin').disabled = false; }
+  }
+
+  // ── CHECK-OUT ──
+  function openCheckoutTimeModal() {
+    const now = getNow();
+    document.getElementById('coCurrentTime').textContent = now;
+    document.getElementById('coPreview').textContent = 'Checkout = ' + now + ' (current)';
+    document.getElementById('coCustomIdle').style.display = 'flex';
+    document.getElementById('coCustomActive').style.display = 'none';
+    document.getElementById('coCustomInput').value = '';
+    document.getElementById('checkoutTimeModal').classList.add('open');
+  }
+  function activateCoCustom() {
+    document.getElementById('coCustomIdle').style.display = 'none';
+    document.getElementById('coCustomActive').style.display = 'block';
+    setTimeout(() => document.getElementById('coCustomInput').focus(), 50);
+  }
+  function coCustomPreview(val) {
+    var mins = parseInt(val) || 0;
+    var n = new Date(); n.setMinutes(n.getMinutes() - mins);
+    var t = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+    document.getElementById('coPreview').textContent = mins > 0 ? 'Checkout = ' + t + ' (−' + mins + ' min)' : 'Checkout = ' + getNow() + ' (current)';
+  }
+  function selectCheckoutOffset(minusMins) {
+    pendingCheckoutOffset = -minusMins;
+    document.getElementById('checkoutTimeModal').classList.remove('open');
+    document.getElementById('checkoutModal').classList.add('open');
+  }
+  function openDiffDayModal() {
+    document.getElementById('checkoutModal').classList.remove('open');
+    document.getElementById('diffDayModal').classList.add('open');
+  }
+  async function doCheckout(type) {
+    document.getElementById('checkoutModal').classList.remove('open');
+    document.getElementById('diffDayModal').classList.remove('open');
+    const t = getTimeWithOffset(pendingCheckoutOffset);
+    let mc = null;
+    if (type === 'different') {
+      mc = document.getElementById('morningCheckinInput').value;
+      if (!mc) { showToast('❌ Morning time daalo'); return; }
+    }
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: getToday(), checkout_time: t, is_different_day: type === 'different', morning_checkin: mc, salary: getSalary() })
+      });
+      const d = await res.json();
+      if (d.success) {
+        renderHomeStatus(d.record);
+        document.getElementById('notesInput').value = '';
+        setTimeout(() => speak('Aaj ka kaam khatam! Check out ho gaya. Jai Shri Ram!', 'entry'), 400);
+        showToast('🎉 Checkout: ' + t + '  |  OT: ₹' + (d.record.total_ot||0).toFixed(0));
+      } else { showToast('❌ ' + (d.error || 'Error')); }
+    } catch(e) { showToast('❌ Network error'); }
+  }
+
+  // ── DASHBOARD ──
+  function changeMonth(dir) {
+    dashMonth += dir;
+    if (dashMonth > 11) { dashMonth = 0; dashYear++; }
+    if (dashMonth < 0)  { dashMonth = 11; dashYear--; }
+    loadDashboard();
+  }
+  async function loadDashboard() {
+    document.getElementById('monthLabel').textContent = MONTHS[dashMonth] + ' ' + dashYear;
+    try {
+      const res  = await fetch('/api/dashboard?month=' + (dashMonth+1) + '&year=' + dashYear);
+      const data = await res.json();
+      renderSummary(data);
+      renderLog(data.records || []);
+    } catch(e) {
+      document.getElementById('summaryGrid').innerHTML = '';
+      document.getElementById('payoutCard').innerHTML = '';
+      document.getElementById('logList').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">Load nahi ho paya</div></div>';
+    }
+  }
+
+  function renderSummary(data) {
+    const salary     = getSalary();
+    const days       = new Date(dashYear, dashMonth + 1, 0).getDate();
+    const perDay     = salary / days;
+    const leaveCount = days === 31 ? 3 : 2;
+    const leavePay   = parseFloat((perDay * leaveCount).toFixed(2));
+    const mobile     = 200;
+    const totalOT    = data.total_ot    || 0;
+    const totalFood  = data.total_food  || 0;
+    const sundayAmt  = data.total_sunday || 0;
+    const sundayDays = data.sunday_days  || 0;
+    const onlyOT     = totalOT - totalFood - sundayAmt;
+    const totalPayout = parseFloat((totalOT + mobile + leavePay).toFixed(2));
+
+    document.getElementById('summaryGrid').innerHTML = `
+      <div class="summary-tile"><span class="tile-icon">💪</span><div class="tile-val green">₹${onlyOT.toFixed(0)}</div><div class="tile-label">Only Overtime</div></div>
+      <div class="summary-tile"><span class="tile-icon">📅</span><div class="tile-val green">${data.days_worked || 0}</div><div class="tile-label">Days Worked</div></div>
+      <div class="summary-tile"><span class="tile-icon">🍱</span><div class="tile-val">₹${totalFood.toFixed(0)}</div><div class="tile-label">Food Charges</div></div>
+      <div class="summary-tile"><span class="tile-icon">🍱</span><div class="tile-val purple">${data.food_days || 0}</div><div class="tile-label">Food Days</div></div>
+      <div class="summary-tile"><span class="tile-icon">🌙</span><div class="tile-val blue">${data.days_fullday || 0}</div><div class="tile-label">Full Day OT</div></div>
+      <div class="summary-tile"><span class="tile-icon">☀️</span><div class="tile-val">${sundayDays}</div><div class="tile-label">Sunday Days</div></div>
+      <div class="summary-tile"><span class="tile-icon">📱</span><div class="tile-val blue">₹${mobile}</div><div class="tile-label">Mobile Recharge</div></div>
+      <div class="summary-tile"><span class="tile-icon">🏖️</span><div class="tile-val purple">₹${leavePay.toFixed(0)}</div><div class="tile-label">Leave (${leaveCount} days)</div></div>
+    `;
+
+    document.getElementById('payoutCard').innerHTML = `
+      <div class="payout-heading">Is Mahine ka Total</div>
+      <div class="payout-total">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</div>
+      <div class="payout-divider"></div>
+      <div class="payout-row"><span class="payout-label">💪 Only Overtime</span><span class="payout-val">₹${onlyOT.toFixed(0)}</span></div>
+      <div class="payout-row"><span class="payout-label">☀️ Sunday OT <span style="font-size:11px;color:var(--text3)">(${sundayDays} days)</span></span><span class="payout-val">₹${sundayAmt.toFixed(0)}</span></div>
+      <div class="payout-row"><span class="payout-label">🍱 Food Charges <span style="font-size:11px;color:var(--text3)">(${data.food_days || 0} days)</span></span><span class="payout-val">₹${totalFood.toFixed(0)}</span></div>
+      <div class="payout-row"><span class="payout-label">📱 Mobile Recharge</span><span class="payout-val">₹${mobile}</span></div>
+      <div class="payout-row"><span class="payout-label">🏖️ Leave <span style="font-size:11px;color:var(--text3)">(${leaveCount} × ₹${perDay.toFixed(0)})</span></span><span class="payout-val">₹${leavePay.toFixed(0)}</span></div>
+      <div class="payout-row total-row"><span style="font-size:15px;font-weight:700;color:var(--text);">💰 Total Payout</span><span class="payout-val highlight">₹${totalPayout.toLocaleString('en-IN', {maximumFractionDigits:0})}</span></div>
+    `;
+  }
+
+  function renderLog(records) {
+    const list = document.getElementById('logList');
+    if (!records.length) { list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">Koi record nahi is mahine</div></div>'; return; }
+    records.sort((a,b) => b.date.localeCompare(a.date));
+    list.innerHTML = records.map(r => {
+      const d  = new Date(r.date + 'T00:00:00');
+      const ot = (r.total_ot||0).toFixed(0);
+      let badges = '';
+      if (r.is_sunday) badges += '<span class="log-badge badge-sunday">SUN</span>';
+      if (r.full_day_triggered) badges += '<span class="log-badge badge-fullday">FULL DAY</span>';
+      let bd = [];
+      if (r.morning_ot > 0)   bd.push('Morning OT ₹' + r.morning_ot);
+      if (r.morning_food > 0) bd.push('Morning Food ₹' + r.morning_food);
+      if (r.evening_ot > 0)   bd.push('Evening OT ₹' + parseFloat(r.evening_ot).toFixed(0));
+      if (r.evening_food > 0) bd.push('Evening Food ₹' + r.evening_food);
+      return `<div class="log-item">
+        <div class="log-date-box"><div class="log-day">${d.getDate()}</div><div class="log-mon">${MONTHS[d.getMonth()].slice(0,3)}</div></div>
+        <div class="log-details">
+          <div class="log-times">${r.checkin_time||''}${r.checkout_time?' → '+r.checkout_time:' → ...'} ${badges}</div>
+          <div class="log-ot${parseFloat(ot)>0?'':' zero'}">₹${ot} overtime</div>
+          ${bd.length?`<div class="log-breakdown">${bd.join(' · ')}</div>`:''}
+          ${r.notes?`<div class="log-notes">📝 ${r.notes}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ══════════════════════════════════
+  // ── MISC — API backed ──
+  // ══════════════════════════════════
+  var miscEditId = null;
+  var miscEntriesCache = [];
+
+  function openMiscModal(editId) {
+    miscEditId = editId || null;
+    document.getElementById('miscModalTitle').textContent = editId ? '✏️ Entry Edit Karo' : '📋 Naya Entry';
+    if (editId) {
+      const entry = miscEntriesCache.find(function(e){ return e._id.toString() === editId; });
+      if (entry) {
+        document.getElementById('miscName').value = entry.name;
+        document.getElementById('miscDate').value = entry.date;
+        document.getElementById('miscNote').value = entry.note || '';
+      }
+    } else {
+      document.getElementById('miscName').value = '';
+      document.getElementById('miscDate').value = getToday();
+      document.getElementById('miscNote').value = '';
+    }
+    document.getElementById('miscModal').classList.add('open');
+    setTimeout(function(){ document.getElementById('miscName').focus(); }, 300);
+  }
+
+  function closeMiscModal() {
+    document.getElementById('miscModal').classList.remove('open');
+    miscEditId = null;
+  }
+
+  async function saveMiscEntry() {
+    const name = document.getElementById('miscName').value.trim();
+    const date = document.getElementById('miscDate').value;
+    const note = document.getElementById('miscNote').value.trim();
+    if (!name) { showToast('❌ Naam daalo'); return; }
+    if (!date) { showToast('❌ Date select karo'); return; }
+    try {
+      const method = miscEditId ? 'PUT' : 'POST';
+      const body   = miscEditId ? { id: miscEditId, name, date, note } : { name, date, note };
+      const res = await fetch('/api/misc', {
+        method, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const d = await res.json();
+      if (d.success || d.entry) {
+        showToast(miscEditId ? '✅ Entry updated!' : '✅ Entry saved!');
+        closeMiscModal();
+        renderMiscList();
+      } else { showToast('❌ ' + (d.error || 'Error')); }
+    } catch(e) { showToast('❌ Network error'); }
+  }
+
+  async function deleteMiscEntry(id) {
+    try {
+      const res = await fetch('/api/misc', {
+        method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      const d = await res.json();
+      if (d.success) { showToast('🗑️ Entry deleted'); renderMiscList(); }
+      else { showToast('❌ ' + (d.error || 'Error')); }
+    } catch(e) { showToast('❌ Network error'); }
+  }
+
+  async function renderMiscList() {
+    const list = document.getElementById('miscList');
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon" style="opacity:1;font-size:28px;">⏳</div><div class="empty-text">Loading...</div></div>';
+    try {
+      const res = await fetch('/api/misc');
+      const d   = await res.json();
+      miscEntriesCache = d.entries || [];
+      if (!miscEntriesCache.length) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Koi entry nahi — upar se add karo!</div></div>';
+        return;
+      }
+      list.innerHTML = miscEntriesCache.map(function(e) {
+        const dt = new Date(e.date + 'T00:00:00');
+        const dateStr = dt.getDate() + ' ' + MONTHS[dt.getMonth()].slice(0,3) + ' ' + dt.getFullYear();
+        const id = e._id.toString();
+        return '<div class="misc-item">' +
+          '<div class="misc-item-top">' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div class="misc-item-name">' + escHtml(e.name) + '</div>' +
+              '<div class="misc-item-date">📅 ' + dateStr + '</div>' +
+            '</div>' +
+            '<div class="misc-actions">' +
+              '<button class="misc-btn" onclick="openMiscModal(\'' + id + '\')" title="Edit">✏️</button>' +
+              '<button class="misc-btn del" onclick="deleteMiscEntry(\'' + id + '\')" title="Delete">🗑️</button>' +
+            '</div>' +
+          '</div>' +
+          (e.note ? '<div class="misc-item-note">💬 ' + escHtml(e.note) + '</div>' : '') +
+        '</div>';
+      }).join('');
+    } catch(err) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">Load nahi ho paya</div></div>';
+    }
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Close modal on outside click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) { this.classList.remove('open'); miscEditId = null; }
+    });
+  });
+
+  function speak(text, type) {
+    // type: 'entry' for checkin/checkout, 'nav' for screen switch
+    try {
+      if (type === 'entry' && localStorage.getItem('sound_entry') === 'off') return;
+      if (type === 'nav'   && localStorage.getItem('sound_nav')   === 'off') return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'hi-IN';
+      u.rate = 0.9;
+      u.pitch = 1.1;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    } catch(e) {}
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+</script>
+</body>
+</html>
