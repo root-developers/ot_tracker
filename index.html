@@ -197,6 +197,23 @@
     .misc-btn:active { transform: scale(0.92); }
     .misc-btn.del:active { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); }
 
+    /* TIME PICKER SELECT */
+    #tpHour, #tpMin, #tpAmPm {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    #tpHour::-webkit-scrollbar, #tpMin::-webkit-scrollbar, #tpAmPm::-webkit-scrollbar { display: none; }
+    #tpHour option, #tpMin option, #tpAmPm option {
+      background: var(--card2);
+      color: var(--text);
+      padding: 8px;
+      font-size: 18px;
+    }
+    #tpHour option:checked, #tpMin option:checked, #tpAmPm option:checked {
+      background: var(--accent);
+      color: #fff;
+    }
+
     /* TOAST */
     .toast { position: fixed; bottom: 104px; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--card); border: 1px solid var(--border2); border-radius: 30px; padding: 11px 24px; font-size: 13px; font-weight: 600; color: var(--text); z-index: 999; opacity: 0; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; pointer-events: none; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -391,18 +408,11 @@
           <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:3px;">Current time</div>
         </div>
       </div>
-      <div class="time-opt" id="ciCustomTile" style="padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;" onclick="activateCiCustom()">
-        <div id="ciCustomIdle" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <span style="font-size:22px;line-height:1;">✏️</span>
-          <span style="font-size:11px;color:var(--text3);font-weight:700;letter-spacing:0.04em;">Custom</span>
-        </div>
-        <div id="ciCustomActive" style="display:none;width:100%;text-align:center;">
-          <div style="font-size:10px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Minutes add</div>
-          <input type="number" id="ciCustomInput" min="0" max="120"
-            style="width:100%;font-family:'Space Mono',monospace;font-size:26px;font-weight:700;background:transparent;border:none;border-bottom:2px solid var(--green);color:var(--green);text-align:center;outline:none;padding-bottom:2px;" placeholder="0"
-            oninput="ciCustomPreview(this.value)"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();doCheckin(parseInt(this.value)||0);}" />
-          <div style="font-size:10px;color:var(--text3);margin-top:6px;font-weight:600;">Enter dabao ✓</div>
+      <div class="time-opt" onclick="openTimePickerModal('checkin')" style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:10px;padding:16px 12px;">
+        <span style="font-size:26px;line-height:1;">✏️</span>
+        <div style="text-align:left;">
+          <div style="font-size:15px;font-weight:800;color:var(--green);font-family:'Space Mono',monospace;line-height:1;">Custom</div>
+          <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:3px;">Time daalo</div>
         </div>
       </div>
     </div>
@@ -432,18 +442,11 @@
           <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:3px;">Current time</div>
         </div>
       </div>
-      <div class="time-opt co" id="coCustomTile" style="padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;" onclick="activateCoCustom()">
-        <div id="coCustomIdle" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <span style="font-size:22px;line-height:1;">✏️</span>
-          <span style="font-size:11px;color:var(--text3);font-weight:700;letter-spacing:0.04em;">Custom</span>
-        </div>
-        <div id="coCustomActive" style="display:none;width:100%;text-align:center;">
-          <div style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Minutes minus</div>
-          <input type="number" id="coCustomInput" min="0" max="120"
-            style="width:100%;font-family:'Space Mono',monospace;font-size:26px;font-weight:700;background:transparent;border:none;border-bottom:2px solid var(--accent);color:var(--accent);text-align:center;outline:none;padding-bottom:2px;" placeholder="0"
-            oninput="coCustomPreview(this.value)"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();selectCheckoutOffset(parseInt(this.value)||0);}" />
-          <div style="font-size:10px;color:var(--text3);margin-top:6px;font-weight:600;">Enter dabao ✓</div>
+      <div class="time-opt co" onclick="openTimePickerModal('checkout')" style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:10px;padding:16px 12px;">
+        <span style="font-size:26px;line-height:1;">✏️</span>
+        <div style="text-align:left;">
+          <div style="font-size:15px;font-weight:800;color:var(--accent);font-family:'Space Mono',monospace;line-height:1;">Custom</div>
+          <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:3px;">Time daalo</div>
         </div>
       </div>
     </div>
@@ -533,6 +536,75 @@
     <div style="display:flex;gap:10px;">
       <button class="btn-secondary" onclick="closeMiscModal()" style="flex:1;">Cancel</button>
       <button class="btn-main btn-checkin" onclick="saveMiscEntry()" style="flex:1;margin:0;color:#052e16;">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Custom Time Picker ══ -->
+<div class="modal-overlay" id="timePickerModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="tpTitle">⏰ Check-in Time</div>
+    <div class="modal-sub" id="tpSub">Exact time daalo</div>
+
+    <!-- Preview -->
+    <div style="text-align:center;background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:20px;">
+      <div style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Selected Time</div>
+      <div id="tpPreview" style="font-family:'Space Mono',monospace;font-size:38px;font-weight:700;color:var(--text);letter-spacing:-1px;line-height:1;">9:00 AM</div>
+    </div>
+
+    <!-- Scroll pickers row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;">
+
+      <!-- Hours -->
+      <div>
+        <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;text-align:center;margin-bottom:6px;">Hour</div>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+          <select id="tpHour" size="4"
+            style="width:100%;background:transparent;border:none;color:var(--text);font-family:'Space Mono',monospace;font-size:18px;font-weight:700;text-align:center;outline:none;padding:4px 0;cursor:pointer;"
+            onchange="updateTpPreview()">
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            <option value="7">7</option><option value="8">8</option><option value="9" selected>9</option>
+            <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Minutes -->
+      <div>
+        <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;text-align:center;margin-bottom:6px;">Min</div>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+          <select id="tpMin" size="4"
+            style="width:100%;background:transparent;border:none;color:var(--text);font-family:'Space Mono',monospace;font-size:18px;font-weight:700;text-align:center;outline:none;padding:4px 0;cursor:pointer;"
+            onchange="updateTpPreview()">
+            <option value="0" selected>00</option><option value="5">05</option><option value="10">10</option>
+            <option value="15">15</option><option value="20">20</option><option value="25">25</option>
+            <option value="30">30</option><option value="35">35</option><option value="40">40</option>
+            <option value="45">45</option><option value="50">50</option><option value="55">55</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- AM/PM -->
+      <div>
+        <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;text-align:center;margin-bottom:6px;">AM/PM</div>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+          <select id="tpAmPm" size="4"
+            style="width:100%;background:transparent;border:none;color:var(--text);font-family:'Space Mono',monospace;font-size:18px;font-weight:700;text-align:center;outline:none;padding:4px 0;cursor:pointer;"
+            onchange="updateTpPreview()">
+            <option value="AM" selected>AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Submit -->
+    <div style="display:flex;gap:10px;">
+      <button class="btn-secondary" onclick="document.getElementById('timePickerModal').classList.remove('open')" style="flex:1">Cancel</button>
+      <button class="btn-main btn-checkin" id="tpSubmitBtn" onclick="submitTimePicker()" style="flex:2;margin:0;color:#052e16;">✓ Set Time</button>
     </div>
   </div>
 </div>
@@ -690,15 +762,10 @@
     const now = getNow();
     document.getElementById('ciCurrentTime').textContent = now;
     document.getElementById('ciPreview').textContent = 'Check-in = ' + now + ' (current)';
-    document.getElementById('ciCustomIdle').style.display = 'flex';
-    document.getElementById('ciCustomActive').style.display = 'none';
-    document.getElementById('ciCustomInput').value = '';
     document.getElementById('checkinTimeModal').classList.add('open');
   }
   function activateCiCustom() {
-    document.getElementById('ciCustomIdle').style.display = 'none';
-    document.getElementById('ciCustomActive').style.display = 'block';
-    setTimeout(() => document.getElementById('ciCustomInput').focus(), 50);
+    openTimePickerModal('checkin');
   }
   function ciCustomPreview(val) {
     var mins = parseInt(val) || 0;
@@ -728,15 +795,10 @@
     const now = getNow();
     document.getElementById('coCurrentTime').textContent = now;
     document.getElementById('coPreview').textContent = 'Checkout = ' + now + ' (current)';
-    document.getElementById('coCustomIdle').style.display = 'flex';
-    document.getElementById('coCustomActive').style.display = 'none';
-    document.getElementById('coCustomInput').value = '';
     document.getElementById('checkoutTimeModal').classList.add('open');
   }
   function activateCoCustom() {
-    document.getElementById('coCustomIdle').style.display = 'none';
-    document.getElementById('coCustomActive').style.display = 'block';
-    setTimeout(() => document.getElementById('coCustomInput').focus(), 50);
+    openTimePickerModal('checkout');
   }
   function coCustomPreview(val) {
     var mins = parseInt(val) || 0;
@@ -984,6 +1046,109 @@
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(u);
     } catch(e) {}
+  }
+
+  // ── TIME PICKER MODAL ──
+  var tpMode = 'checkin'; // 'checkin' or 'checkout'
+
+  function openTimePickerModal(mode) {
+    tpMode = mode;
+    // Close parent modal first
+    document.getElementById(mode === 'checkin' ? 'checkinTimeModal' : 'checkoutTimeModal').classList.remove('open');
+
+    // Set title
+    document.getElementById('tpTitle').textContent  = mode === 'checkin' ? '⏰ Check-in Time' : '⏰ Checkout Time';
+    document.getElementById('tpSub').textContent    = mode === 'checkin' ? 'Aaj subah kab pohonche?' : 'Aaj sham kab nikle?';
+
+    // Default: checkin → AM 9:00, checkout → PM 7:00
+    if (mode === 'checkin') {
+      setSelectVal('tpHour', '9');
+      setSelectVal('tpMin',  '0');
+      setSelectVal('tpAmPm', 'AM');
+    } else {
+      setSelectVal('tpHour', '7');
+      setSelectVal('tpMin',  '0');
+      setSelectVal('tpAmPm', 'PM');
+    }
+
+    // Button color
+    var btn = document.getElementById('tpSubmitBtn');
+    if (mode === 'checkin') {
+      btn.className = 'btn-main btn-checkin';
+      btn.style.color = '#052e16';
+    } else {
+      btn.className = 'btn-main btn-checkout';
+      btn.style.color = '#fff';
+    }
+
+    updateTpPreview();
+    document.getElementById('timePickerModal').classList.add('open');
+  }
+
+  function setSelectVal(id, val) {
+    var sel = document.getElementById(id);
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === val) { sel.selectedIndex = i; break; }
+    }
+  }
+
+  function updateTpPreview() {
+    var h    = document.getElementById('tpHour').value;
+    var m    = document.getElementById('tpMin').value;
+    var ampm = document.getElementById('tpAmPm').value;
+    var mStr = String(m).padStart(2, '0');
+    document.getElementById('tpPreview').textContent = h + ':' + mStr + ' ' + ampm;
+  }
+
+  function submitTimePicker() {
+    var h    = parseInt(document.getElementById('tpHour').value);
+    var m    = parseInt(document.getElementById('tpMin').value);
+    var ampm = document.getElementById('tpAmPm').value;
+
+    // Convert to 24hr HH:MM
+    var h24 = h;
+    if (ampm === 'AM' && h === 12) h24 = 0;
+    if (ampm === 'PM' && h !== 12) h24 = h + 12;
+    var timeStr = String(h24).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+
+    document.getElementById('timePickerModal').classList.remove('open');
+
+    if (tpMode === 'checkin') {
+      // Direct checkin with exact time
+      doCheckinWithTime(timeStr);
+    } else {
+      // For checkout: calculate offset from now
+      var now = new Date();
+      var nowMins = now.getHours() * 60 + now.getMinutes();
+      var targetMins = h24 * 60 + m;
+      var diffMins = nowMins - targetMins; // how many mins ago
+      pendingCheckoutOffset = -diffMins;
+      document.getElementById('checkoutModal').classList.add('open');
+    }
+  }
+
+  async function doCheckinWithTime(exactTime) {
+    document.getElementById('btnCheckin').disabled = true;
+    try {
+      const res = await fetch('/api/checkin', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: getToday(), checkin_time: exactTime,
+          is_sunday: document.getElementById('sundayToggle').checked,
+          notes: document.getElementById('notesInput').value.trim(),
+          salary: getSalary()
+        })
+      });
+      const d = await res.json();
+      if (d.success) {
+        renderHomeStatus(d.record);
+        setTimeout(() => speak('Jai Ganesh! Check in ho gaya.', 'entry'), 300);
+        showToast('✅ Check-in: ' + exactTime);
+      } else {
+        showToast('❌ ' + (d.error || 'Error'));
+        document.getElementById('btnCheckin').disabled = false;
+      }
+    } catch(e) { showToast('❌ Network error'); document.getElementById('btnCheckin').disabled = false; }
   }
 
   function showToast(msg) {
